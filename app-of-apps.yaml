@@ -62,7 +62,7 @@ spec:
     spec:
       project: default
       source:
-        repoURL: https://github.com/NUS-ISS-Agile-Team/ceramicraft-argocd-deploy.git
+        repoURL: https://github.com/sw5005-sus/ceramicraft-argocd-deploy.git
         targetRevision: HEAD
         path: charts                 
         helm:
@@ -88,7 +88,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/NUS-ISS-Agile-Team/ceramicraft-argocd-deploy.git
+    repoURL: https://github.com/sw5005-sus/ceramicraft-argocd-deploy.git
     targetRevision: HEAD
     path: backend
   destination:
@@ -110,7 +110,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/NUS-ISS-Agile-Team/ceramicraft-argocd-deploy.git  
+    repoURL: https://github.com/sw5005-sus/ceramicraft-argocd-deploy.git  
     targetRevision: HEAD
     path: vue_apps/overlays/merchant_frontend
   destination:
@@ -130,7 +130,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/NUS-ISS-Agile-Team/ceramicraft-argocd-deploy.git  
+    repoURL: https://github.com/sw5005-sus/ceramicraft-argocd-deploy.git  
     targetRevision: HEAD
     path: vue_apps/overlays/customer_frontend
   destination:

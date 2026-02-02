@@ -19,13 +19,13 @@ data:
       file_path: ./logs/ceramicraft-payment-mservice.log
 
     mysql:
-      host: "172.31.5.184"
+      host: "172.31.2.221"
       port: "3306"
       userName: "root"
       dbName: "payment_db"
 
     kafka:
-      brokers: ["kafka-kraft-0.kafka-headless.kafka.svc.cluster.local:9092"]
+      brokers: ["172.31.2.221:9092"]
       group_id: "ceramicraft-payment-group"
       max_bytes: 10485760
       commit_interval: 0

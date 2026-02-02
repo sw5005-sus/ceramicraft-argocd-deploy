@@ -19,7 +19,7 @@ data:
       file_path: ./logs/ceramicraft-order-mservice.log
 
     mysql:
-      host: "172.31.5.184"
+      host: "172.31.2.221"
       port: "3306"
       userName: "root"
       dbName: "order_db"
@@ -33,5 +33,5 @@ data:
       port: 5001
 
     kafka:
-      host: "kafka-kraft-0.kafka-headless.kafka.svc.cluster.local"
+      host: "172.31.2.221"
       port: 9092
