@@ -12,7 +12,5 @@ configMapGenerator:
       - nginx.conf
   - name: nginx-sub
     files:
-      - conf.d/customer-app.conf
-      - conf.d/merchant-app.conf
       - conf.d/locations.common
       - conf.d/default.conf
