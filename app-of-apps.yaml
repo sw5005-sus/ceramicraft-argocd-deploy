@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/NUS-ISS-Agile-Team/ceramicraft-argocd-deploy.git
+    repoURL: https://github.com/sw5005-sus/ceramicraft-argocd-deploy.git
     targetRevision: HEAD
     path: bootstrap
   destination:
@@ -28,7 +28,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/NUS-ISS-Agile-Team/ceramicraft-argocd-deploy.git
+    repoURL: https://github.com/sw5005-sus/ceramicraft-argocd-deploy.git
     targetRevision: HEAD
     path: nginx
   destination:
@@ -51,7 +51,7 @@ spec:
   goTemplate: true
   generators:
     - git:
-        repoURL: https://github.com/NUS-ISS-Agile-Team/ceramicraft-argocd-deploy.git
+        repoURL: https://github.com/sw5005-sus/ceramicraft-argocd-deploy.git
         revision: HEAD
         directories:
           - path: helm_backend/*
@@ -62,7 +62,7 @@ spec:
     spec:
       project: default
       source:
-        repoURL: https://github.com/NUS-ISS-Agile-Team/ceramicraft-argocd-deploy.git
+        repoURL: https://github.com/sw5005-sus/ceramicraft-argocd-deploy.git
         targetRevision: HEAD
         path: charts                 
         helm:
@@ -88,7 +88,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/NUS-ISS-Agile-Team/ceramicraft-argocd-deploy.git
+    repoURL: https://github.com/sw5005-sus/ceramicraft-argocd-deploy.git
     targetRevision: HEAD
     path: backend
   destination:
@@ -100,43 +100,3 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: merchant-frontend
-  namespace: argocd
-spec:
-  project: default
-  source:
-    repoURL: https://github.com/NUS-ISS-Agile-Team/ceramicraft-argocd-deploy.git  
-    targetRevision: HEAD
-    path: vue_apps/overlays/merchant_frontend
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: default
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: customer-frontend
-  namespace: argocd
-spec:
-  project: default
-  source:
-    repoURL: https://github.com/NUS-ISS-Agile-Team/ceramicraft-argocd-deploy.git  
-    targetRevision: HEAD
-    path: vue_apps/overlays/customer_frontend
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: default
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true

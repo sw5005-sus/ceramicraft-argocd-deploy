@@ -19,7 +19,7 @@ data:
       file_path: ./logs/ceramicraft-user-mservice.log
 
     mysql:
-      host: "172.31.5.184"
+      host: "172.31.2.221"
       port: "3306"
       userName: "root"
       dbName: "user_db"
@@ -29,7 +29,7 @@ data:
 
     kafka:
       brokers: 
-        - "kafka-kraft-0.kafka-headless.kafka.svc.cluster.local:9092"
+        - "172.31.2.221:29092"
       user_activated_topic: "user-activated"
       max_bytes: 1048576
       acks: 1
