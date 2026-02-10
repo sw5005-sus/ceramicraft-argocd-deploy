@@ -34,4 +34,4 @@ data:
 
     kafka:
       host: "172.31.2.221"
-      port: 9092
+      port: 29092
