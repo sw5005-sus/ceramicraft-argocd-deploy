@@ -114,6 +114,11 @@ spec:
     repoURL: https://helm.releases.hashicorp.com
     targetRevision: 0.28.0
     helm:
+      parameters:
+        - name: "server.kmsRegion"
+          value: "ap-southeast-1"
+        - name: "server.kmsKeyId"
+          value: "alias/ceramicraft-k3s-vault"
       values: |
         server:
           replicas: 1
@@ -145,11 +150,6 @@ spec:
           ui:
             enabled: true
             serviceType: ClusterIP
-      parameters:
-        - name: "server.kmsRegion"
-          value: "ap-southeast-1"
-        - name: "server.kmsKeyId"
-          value: "alias/ceramicraft-k3s-vault"
   destination:
     # deploy to K3s
     server: https://kubernetes.default.svc
