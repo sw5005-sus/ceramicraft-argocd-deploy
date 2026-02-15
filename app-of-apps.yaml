@@ -120,16 +120,7 @@ spec:
           # standalone mode
           standalone:
             enabled: true
-          dataStorage:
-            enabled: true
-            size: 2Gi # sufficient for demo purposes
-          ingress:
-            enabled: true
-            ingressClassName: traefik
-            hosts:
-              - host: vault.local
-                paths: ["/"]
-          config: |
+            config: |
             ui = true
             storage "file" {
               path = "/vault/data"
@@ -139,6 +130,17 @@ spec:
               region     = "ap-southeast-1"
               kms_key_id = "alias/ceramicraft-k3s-vault"
             }
+          config: ""
+          dataStorage:
+            enabled: true
+            size: 2Gi # sufficient for demo purposes
+          ingress:
+            enabled: true
+            ingressClassName: traefik
+            hosts:
+              - host: vault.local
+                paths: ["/"]
+          
           # open ui for demo purposes, not recommended for production
           ui:
             enabled: true
