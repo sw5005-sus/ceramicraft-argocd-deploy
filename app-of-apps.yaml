@@ -100,3 +100,50 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: hashicorp-vault
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: vault
+    repoURL: https://helm.releases.hashicorp.com
+    targetRevision: 0.28.0
+    helm:
+      values: |
+        server:
+          replicas: 1
+          # standalone mode
+          standalone:
+            enabled: true
+          dataStorage:
+            enabled: true
+            size: 2Gi # sufficient for demo purposes
+          ingress:
+            enabled: true
+            ingressClassName: traefik
+            hosts:
+              - host: vault.local
+                paths:
+                  - path: /
+                    pathType: Prefix
+          # open ui for demo purposes, not recommended for production
+          ui:
+            enabled: true
+            serviceType: ClusterIP
+  destination:
+    # deploy to K3s
+    server: https://kubernetes.default.svc
+    # deploy to vault namespace
+    namespace: vault 
+
+  syncPolicy:
+    automated:
+      prune: true      # automatically delete resources that are no longer defined in Git
+      selfHeal: true   # automatically revert changes made to resources that differ from Git
+    syncOptions:
+      - CreateNamespace=true
