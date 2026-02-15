@@ -167,3 +167,25 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vault-secrets-sync
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sw5005-sus/ceramicraft-argocd-deploy.git
+    path: k8s-configs # path store secret-store.yaml and external-secret-store.yaml
+    targetRevision: HEAD
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vault
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
