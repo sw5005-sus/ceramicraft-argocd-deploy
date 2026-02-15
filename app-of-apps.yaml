@@ -128,7 +128,7 @@ spec:
             ingressClassName: traefik
             hosts:
               - host: vault.local
-                paths: [{ "path": "/", "pathType": "Prefix" }]
+                paths: ["/"]
           # open ui for demo purposes, not recommended for production
           ui:
             enabled: true
