@@ -149,7 +149,7 @@ spec:
         - name: "server.kmsRegion"
           value: "ap-southeast-1"
         - name: "server.kmsKeyId"
-          value: "24d062dc-c8ec-4588-b803-4a4d278cc785"
+          value: "alias/ceramicraft-k3s-vault"
   destination:
     # deploy to K3s
     server: https://kubernetes.default.svc
