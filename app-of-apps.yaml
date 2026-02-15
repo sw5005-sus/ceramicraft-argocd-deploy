@@ -120,16 +120,6 @@ spec:
           # standalone mode
           standalone:
             enabled: true
-            config: |
-            ui = true
-            storage "file" {
-              path = "/vault/data"
-            }
-            # auto unseal using AWS KMS, replace with your own region and KMS key ID
-            seal "awskms" {
-              region     = "ap-southeast-1"
-              kms_key_id = "alias/ceramicraft-k3s-vault"
-            }
           config: ""
           dataStorage:
             enabled: true
@@ -140,7 +130,11 @@ spec:
             hosts:
               - host: vault.local
                 paths: ["/"]
-          
+          extraConfig: |
+            seal "awskms" {
+              region     = "ap-southeast-1"
+              kms_key_id = "alias/ceramicraft-k3s-vault"
+            }
           # open ui for demo purposes, not recommended for production
           ui:
             enabled: true
