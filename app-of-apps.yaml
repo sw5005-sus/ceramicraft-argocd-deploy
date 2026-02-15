@@ -129,7 +129,7 @@ spec:
             hosts:
               - host: vault.local
                 paths:
-                  - path: /
+                  - path: "/"
                     pathType: Prefix
           # open ui for demo purposes, not recommended for production
           ui:
