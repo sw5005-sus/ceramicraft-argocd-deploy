@@ -114,11 +114,6 @@ spec:
     repoURL: https://helm.releases.hashicorp.com
     targetRevision: 0.28.0
     helm:
-      parameters:
-        - name: "server.kmsRegion"
-          value: "ap-southeast-1"
-        - name: "server.kmsKeyId"
-          value: "alias/ceramicraft-k3s-vault"
       values: |
         server:
           replicas: 1
@@ -134,8 +129,6 @@ spec:
             hosts:
               - host: vault.local
                 paths: ["/"]
-          kmsRegion: "placeholder" 
-          kmsKeyId: "placeholder"
           config: |
             ui = true
             storage "file" {
@@ -143,8 +136,8 @@ spec:
             }
             # auto unseal using AWS KMS, replace with your own region and KMS key ID
             seal "awskms" {
-              region     = "{{ .Values.server.kmsRegion }}"
-              kms_key_id = "{{ .Values.server.kmsKeyId }}"
+              region     = "ap-southeast-1"
+              kms_key_id = "alias/ceramicraft-k3s-vault"
             }
           # open ui for demo purposes, not recommended for production
           ui:
