@@ -117,24 +117,35 @@ spec:
       values: |
         server:
           replicas: 1
-          # standalone mode
           standalone:
             enabled: true
-          config: ""
+            config: |
+              ui = true
+              
+              listener "tcp" {
+                address = "[::]:8200"
+                tls_disable = true
+              }
+              
+              # local storage for demo purposes, not recommended for production
+              storage "file" {
+                path = "/vault/data"
+              }
+              
+              # AWS KMS Auto-unseal
+              seal "awskms" {
+                region     = "ap-southeast-1"    
+                kms_key_id = "alias/ceramicraft-k3s-vault"
+              }
           dataStorage:
             enabled: true
-            size: 2Gi # sufficient for demo purposes
+            size: 1Gi # sufficient for demo purposes
           ingress:
             enabled: true
             ingressClassName: traefik
             hosts:
               - host: vault.local
                 paths: ["/"]
-          extraConfig: |
-            seal "awskms" {
-              region     = "ap-southeast-1"
-              kms_key_id = "alias/ceramicraft-k3s-vault"
-            }
           # open ui for demo purposes, not recommended for production
           ui:
             enabled: true
