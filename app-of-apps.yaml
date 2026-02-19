@@ -230,7 +230,7 @@ spec:
   source:
     chart: linkerd-control-plane
     repoURL: https://helm.linkerd.io/stable
-    targetRevision: 1.16.1 
+    targetRevision: 1.16.11
     helm:
       values: |
         identity:
@@ -251,7 +251,6 @@ spec:
           PoUgYHAM7b6bmy++qMBJvHdf1ht+bL2eRw==
           -----END CERTIFICATE-----
           # END ANSIBLE MANAGED CERT
-        # INSERT_CA_MARKER
   destination:
     server: https://kubernetes.default.svc
     namespace: linkerd
