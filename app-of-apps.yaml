@@ -219,3 +219,16 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+          # BEGIN ANSIBLE MANAGED CERT
+          -----BEGIN CERTIFICATE-----
+          MIIBlTCCATygAwIBAgIRANOhs6+4qtZ+L6JFnelvSEswCgYIKoZIzj0EAwIwKTEn
+          MCUGA1UEAxMeaWRlbnRpdHkubGlua2VyZC5jbHVzdGVyLmxvY2FsMB4XDTI2MDIx
+          OTAyMjQ0MVoXDTM2MDIxNzAyMjQ0MVowKTEnMCUGA1UEAxMeaWRlbnRpdHkubGlu
+          a2VyZC5jbHVzdGVyLmxvY2FsMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE9UWv
+          2qQpsM/O5Cycg3uMITIGgKupNmBS5GCv/60GuNXnGWDz8Vny95CC2j/G1OHqXG4u
+          IDV6Cl/lxSaZ0L150aNFMEMwDgYDVR0PAQH/BAQDAgEGMBIGA1UdEwEB/wQIMAYB
+          Af8CAQEwHQYDVR0OBBYEFAeJLHjQLeCth/8ma7ZBg9RQuojFMAoGCCqGSM49BAMC
+          A0cAMEQCIH93LL1FKSY3n5eNBGhBUQVIknokabOJs0TuuHr/6nB+AiBUYRpVX2HC
+          PoUgYHAM7b6bmy++qMBJvHdf1ht+bL2eRw==
+          -----END CERTIFICATE-----
+          # END ANSIBLE MANAGED CERT
