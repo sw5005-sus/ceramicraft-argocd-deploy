@@ -4,6 +4,9 @@
 
 replicaCount: 1
 
+podAnnotations:
+  linkerd.io/inject: enabled
+
 image:
   repository: lian1280/user-ms
   tag: debug-1.0.3
