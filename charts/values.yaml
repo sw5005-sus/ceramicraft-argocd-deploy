@@ -35,6 +35,9 @@ resources:
     cpu: 100m
     memory: 128Mi
 
+externalSecret:
+  targetName: ms-secret-vault
+  
 # 卷配置
 volumes:
   configMapName: user-ms-config   

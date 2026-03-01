@@ -68,27 +68,9 @@ spec:
             limits:
               memory: {{ .Values.resources.limits.memory }}
               cpu: {{ .Values.resources.limits.cpu }}
-          env:
-            - name: MYSQL_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: ms-secret
-                  key: MYSQL_PASSWORD
-            - name: JWT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: ms-secret
-                  key: JWT_SECRET
-            - name: SMTP_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: ms-secret
-                  key: SMTP_PASSWORD
-            - name: SMTP_EMAIL_FROM
-              valueFrom:
-                secretKeyRef:
-                  name: ms-secret
-                  key: SMTP_EMAIL_FROM
+          envFrom:
+            - secretRef:
+                name: {{ .Values.externalSecret.targetName | default "ms-secret-vault" }}
       volumes:
         - name: config
           configMap:
