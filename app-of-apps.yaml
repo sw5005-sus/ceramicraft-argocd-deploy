@@ -23,14 +23,67 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: nginx
+  name: traefik
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: traefik
+    repoURL: https://traefik.github.io/charts
+    targetRevision: 26.0.0
+    helm:
+      values: |
+        ports:
+          web:
+            exposedPort: 80
+          websecure:
+            exposedPort: 443
+        additionalArguments:
+          - "--providers.kubernetesCRD.allowCrossNamespace=true"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: traefik
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: auth-shim
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/sw5005-sus/ceramicraft-argocd-deploy.git
     targetRevision: HEAD
-    path: nginx
+    path: auth-shim-chart
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: traefik-config
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sw5005-sus/ceramicraft-argocd-deploy.git
+    targetRevision: HEAD
+    path: traefik-config
   destination:
     server: https://kubernetes.default.svc
     namespace: default
