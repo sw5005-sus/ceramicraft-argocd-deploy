@@ -115,6 +115,8 @@ spec:
     targetRevision: 0.28.0
     helm:
       values: |
+        commonAnnotations:
+          linkerd.io/inject: enabled
         injector:
           enabled: false
         server:
@@ -194,6 +196,13 @@ spec:
     chart: external-secrets
     repoURL: https://charts.external-secrets.io
     targetRevision: 0.9.11
+    helm:
+      values: |
+        commonAnnotations:
+          linkerd.io/inject: enabled
+        serviceAccount:
+          create: true
+          name: "external-secrets-sa"
   destination:
     server: https://kubernetes.default.svc
     namespace: external-secrets
