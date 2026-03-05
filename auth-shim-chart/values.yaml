@@ -1,5 +1,5 @@
 image:
-  repository: profgamer/ceramicraft-auth-shim
+  repository: adamxin/ceramicraft-auth-shim
   pullPolicy: Always
   tag: "latest"
 
