@@ -1,0 +1,119 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-user-prefix
+  namespace: default
+spec:
+  stripPrefix:
+    prefixes:
+      - /api/user-ms
+      - /user-ms
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-payment-prefix
+  namespace: default
+spec:
+  stripPrefix:
+    prefixes:
+      - /api/payment-ms
+      - /payment-ms
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-order-prefix
+  namespace: default
+spec:
+  stripPrefix:
+    prefixes:
+      - /api/order-ms
+      - /order-ms
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-product-prefix
+  namespace: default
+spec:
+  stripPrefix:
+    prefixes:
+      - /api/product-ms
+      - /product-ms
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-comment-prefix
+  namespace: default
+spec:
+  stripPrefix:
+    prefixes:
+      - /api/comment-ms
+      - /comment-ms
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: backend-routes
+  namespace: default
+spec:
+  entryPoints:
+    - web
+  routes:
+    # User Service
+    - match: PathPrefix(`/api/user-ms`) || PathPrefix(`/user-ms`)
+      kind: Rule
+      services:
+        - name: user-ms-svc
+          port: 8080
+      middlewares:
+        - name: zitadel-auth-shim
+        - name: strip-user-prefix
+
+    # Payment Service
+    - match: PathPrefix(`/api/payment-ms`) || PathPrefix(`/payment-ms`)
+      kind: Rule
+      services:
+        - name: payment-ms-svc
+          port: 8080
+      middlewares:
+        - name: zitadel-auth-shim
+        - name: strip-payment-prefix
+
+    # Order Service
+    - match: PathPrefix(`/api/order-ms`) || PathPrefix(`/order-ms`)
+      kind: Rule
+      services:
+        - name: order-ms-svc
+          port: 8080
+      middlewares:
+        - name: zitadel-auth-shim
+        - name: strip-order-prefix
+
+    # Product Service
+    - match: PathPrefix(`/api/product-ms`) || PathPrefix(`/product-ms`)
+      kind: Rule
+      services:
+        - name: product-ms-svc
+          port: 8080
+      middlewares:
+        - name: zitadel-auth-shim
+        - name: strip-product-prefix
+
+    # Comment Service
+    - match: PathPrefix(`/api/comment-ms`) || PathPrefix(`/comment-ms`)
+      kind: Rule
+      services:
+        - name: comment-ms-svc
+          port: 8080
+      middlewares:
+        - name: zitadel-auth-shim
+        - name: strip-comment-prefix
+

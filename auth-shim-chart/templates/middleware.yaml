@@ -1,0 +1,13 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: zitadel-auth-shim
+  labels:
+    {{- include "auth-shim.labels" . | nindent 4 }}
+spec:
+  forwardAuth:
+    address: "http://{{ include "auth-shim.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}/verify"
+    trustForwardHeader: true
+    authResponseHeaders:
+      - "X-Original-User-ID"
+
