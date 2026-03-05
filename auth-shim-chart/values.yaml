@@ -1,6 +1,6 @@
 image:
-  repository: ghcr.io/ceramicraft/auth-shim
-  pullPolicy: IfNotPresent
+  repository: profgamer/ceramicraft-auth-shim
+  pullPolicy: Always
   tag: "latest"
 
 service:
