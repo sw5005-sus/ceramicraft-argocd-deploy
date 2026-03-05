@@ -1,5 +1,5 @@
 image:
-  repository: adamxin/ceramicraft-auth-shim
+  repository: docker.io/adamxin/ceramicraft-auth-shim
   pullPolicy: Always
   tag: "latest"
 
