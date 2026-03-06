@@ -72,7 +72,7 @@ spec:
       kind: Rule
       services:
         - name: user-ms-svc
-          port: 8080
+          port: http
       middlewares:
         - name: zitadel-auth-shim
         - name: strip-user-prefix
@@ -82,7 +82,7 @@ spec:
       kind: Rule
       services:
         - name: payment-ms-svc
-          port: 8080
+          port: http
       middlewares:
         - name: zitadel-auth-shim
         - name: strip-payment-prefix
@@ -92,7 +92,7 @@ spec:
       kind: Rule
       services:
         - name: order-ms-svc
-          port: 8080
+          port: http
       middlewares:
         - name: zitadel-auth-shim
         - name: strip-order-prefix
@@ -102,7 +102,7 @@ spec:
       kind: Rule
       services:
         - name: product-ms-svc
-          port: 8080
+          port: http
       middlewares:
         - name: zitadel-auth-shim
         - name: strip-product-prefix
@@ -112,7 +112,7 @@ spec:
       kind: Rule
       services:
         - name: comment-ms-svc
-          port: 8080
+          port: http
       middlewares:
         - name: zitadel-auth-shim
         - name: strip-comment-prefix
