@@ -34,7 +34,6 @@ spec:
     helm:
       values: |
         deployment:
-          kind: Deployment
           strategy:
             type: Recreate
         service: 

@@ -105,7 +105,6 @@ spec:
           port: http
       middlewares:
         - name: zitadel-auth-shim
-        - name: strip-product-prefix
 
     # Comment Service
     - match: PathPrefix(`/api/comment-ms`) || PathPrefix(`/comment-ms`)
