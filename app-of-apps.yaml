@@ -61,28 +61,6 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: auth-shim
-  namespace: argocd
-spec:
-  project: default
-  source:
-    repoURL: https://github.com/sw5005-sus/ceramicraft-argocd-deploy.git
-    targetRevision: HEAD
-    path: auth-shim-chart
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: default
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
   name: traefik-config
   namespace: argocd
 spec:
@@ -100,7 +78,7 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-
+      
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
