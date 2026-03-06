@@ -1,3 +1,14 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: zitadel-auth
+  namespace: default
+spec:
+  forwardAuth:
+    address: http://user-ms-svc.default.svc.cluster.local/oauth/v1/verify
+    trustForwardHeader: true
+    authResponseHeaders:
+      - "X-Original-User-ID"
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
@@ -15,7 +26,7 @@ spec:
         - name: user-ms-svc
           port: http
       middlewares:
-        - name: zitadel-auth-shim
+        - name: zitadel-auth
 
     # Payment Service
     - match: PathPrefix(`/api/payment-ms`) || PathPrefix(`/payment-ms`)
@@ -24,7 +35,7 @@ spec:
         - name: payment-ms-svc
           port: http
       middlewares:
-        - name: zitadel-auth-shim
+        - name: zitadel-auth
 
     # Order Service
     - match: PathPrefix(`/api/order-ms`) || PathPrefix(`/order-ms`)
@@ -33,7 +44,7 @@ spec:
         - name: order-ms-svc
           port: http
       middlewares:
-        - name: zitadel-auth-shim
+        - name: zitadel-auth
 
     # Product Service
     - match: PathPrefix(`/api/product-ms`) || PathPrefix(`/product-ms`)
@@ -42,7 +53,7 @@ spec:
         - name: product-ms-svc
           port: http
       middlewares:
-        - name: zitadel-auth-shim
+        - name: zitadel-auth
 
     # Comment Service
     - match: PathPrefix(`/api/comment-ms`) || PathPrefix(`/comment-ms`)
@@ -51,5 +62,5 @@ spec:
         - name: comment-ms-svc
           port: http
       middlewares:
-        - name: zitadel-auth-shim
+        - name: zitadel-auth
 
