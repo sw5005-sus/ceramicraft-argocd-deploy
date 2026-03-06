@@ -33,11 +33,15 @@ spec:
     targetRevision: 26.0.0
     helm:
       values: |
+        service: 
+          type: ClusterIP
         ports:
           web:
             exposedPort: 80
+            hostPort: 80
           websecure:
             exposedPort: 443
+            hostPort: 443
         additionalArguments:
           - "--providers.kubernetesCRD.allowCrossNamespace=true"
   destination:
