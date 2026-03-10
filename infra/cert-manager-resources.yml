@@ -4,3 +4,54 @@ metadata:
   name: vault-selfsigned-issuer
 spec:
   selfSigned: {}
+
+---
+# Let's Encrypt Production Issuer
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: admin@ntdoc.site
+    privateKeySecretRef:
+      name: letsencrypt-prod-account-key
+    solvers:
+      - http01:
+          ingress:
+            ingressClassName: traefik
+
+---
+# Let's Encrypt Staging Issuer (for testing, to avoid rate limits)
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-staging
+spec:
+  acme:
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    email: admin@ntdoc.site
+    privateKeySecretRef:
+      name: letsencrypt-staging-account-key
+    solvers:
+      - http01:
+          ingress:
+            ingressClassName: traefik
+
+---
+# TLS Certificate for api.ntdoc.site
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: api-ntdoc-site-tls
+  namespace: default
+spec:
+  secretName: api-ntdoc-site-tls-secret
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - api.ntdoc.site
+  duration: 2160h    # 90 days
+  renewBefore: 360h  # renew 15 days before expiry

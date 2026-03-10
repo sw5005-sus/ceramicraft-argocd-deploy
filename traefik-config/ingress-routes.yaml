@@ -10,6 +10,36 @@ spec:
     authResponseHeaders:
       - "X-Original-User-ID"
 ---
+# Middleware: HTTP to HTTPS redirect
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-to-https
+  namespace: default
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
+---
+# HTTP IngressRoute — redirect all traffic to HTTPS
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: backend-routes-http-redirect
+  namespace: default
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`api.ntdoc.site`)
+      kind: Rule
+      services:
+        - name: noop@internal
+          kind: TraefikService
+      middlewares:
+        - name: redirect-to-https
+---
+# HTTPS IngressRoute — main routes with TLS
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
@@ -17,10 +47,12 @@ metadata:
   namespace: default
 spec:
   entryPoints:
-    - web
+    - websecure
+  tls:
+    secretName: api-ntdoc-site-tls-secret
   routes:
     # User Service
-    - match: PathPrefix(`/api/user-ms`) || PathPrefix(`/user-ms`)
+    - match: Host(`api.ntdoc.site`) && (PathPrefix(`/api/user-ms`) || PathPrefix(`/user-ms`))
       kind: Rule
       services:
         - name: user-ms-svc
@@ -29,7 +61,7 @@ spec:
         - name: zitadel-auth
 
     # Payment Service
-    - match: PathPrefix(`/api/payment-ms`) || PathPrefix(`/payment-ms`)
+    - match: Host(`api.ntdoc.site`) && (PathPrefix(`/api/payment-ms`) || PathPrefix(`/payment-ms`))
       kind: Rule
       services:
         - name: payment-ms-svc
@@ -38,7 +70,7 @@ spec:
         - name: zitadel-auth
 
     # Order Service
-    - match: PathPrefix(`/api/order-ms`) || PathPrefix(`/order-ms`)
+    - match: Host(`api.ntdoc.site`) && (PathPrefix(`/api/order-ms`) || PathPrefix(`/order-ms`))
       kind: Rule
       services:
         - name: order-ms-svc
@@ -47,7 +79,7 @@ spec:
         - name: zitadel-auth
 
     # Product Service
-    - match: PathPrefix(`/api/product-ms`) || PathPrefix(`/product-ms`)
+    - match: Host(`api.ntdoc.site`) && (PathPrefix(`/api/product-ms`) || PathPrefix(`/product-ms`))
       kind: Rule
       services:
         - name: product-ms-svc
@@ -56,7 +88,7 @@ spec:
         - name: zitadel-auth
 
     # Comment Service
-    - match: PathPrefix(`/api/comment-ms`) || PathPrefix(`/comment-ms`)
+    - match: Host(`api.ntdoc.site`) && (PathPrefix(`/api/comment-ms`) || PathPrefix(`/comment-ms`))
       kind: Rule
       services:
         - name: comment-ms-svc
