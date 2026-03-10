@@ -1,0 +1,31 @@
+# TLS Certificate for api.ntdoc.site
+# Deployed to traefik namespace so Traefik can directly access the secret
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: api-ntdoc-site-tls
+  namespace: traefik
+spec:
+  secretName: api-ntdoc-site-tls-secret
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - api.ntdoc.site
+    - argocd.ntdoc.site
+  duration: 2160h    # 90 days
+  renewBefore: 360h  # renew 15 days before expiry
+
+---
+# TLSStore "default" tells Traefik to use this cert as the default certificate
+# for all TLS connections on the websecure entrypoint.
+# Must be named "default" and in the same namespace as Traefik.
+apiVersion: traefik.containo.us/v1alpha1
+kind: TLSStore
+metadata:
+  name: default
+  namespace: traefik
+spec:
+  defaultCertificate:
+    secretName: api-ntdoc-site-tls-secret
+
