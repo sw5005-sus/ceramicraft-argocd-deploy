@@ -96,15 +96,6 @@ spec:
         - name: zitadel-auth
 
 ---
-# ServersTransport: skip TLS verification for ArgoCD backend
-apiVersion: traefik.containo.us/v1alpha1
-kind: ServersTransport
-metadata:
-  name: argocd-transport
-  namespace: default
-spec:
-  insecureSkipVerify: true
----
 # ============================================================
 # ArgoCD UI — accessible via https://argocd.ntdoc.site
 # (no zitadel-auth, ArgoCD has its own authentication)
@@ -124,9 +115,7 @@ spec:
       services:
         - name: argocd-server
           namespace: argocd
-          port: 443
-          scheme: https
-          serversTransport: argocd-transport
+          port: 80
 ---
 # ArgoCD HTTP redirect
 apiVersion: traefik.containo.us/v1alpha1
