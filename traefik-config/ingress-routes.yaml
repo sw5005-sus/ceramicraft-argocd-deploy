@@ -1,3 +1,20 @@
+# TLS Certificate for api.ntdoc.site (must be in default namespace for Traefik to access)
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: api-ntdoc-site-tls
+  namespace: default
+spec:
+  secretName: api-ntdoc-site-tls-secret
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - api.ntdoc.site
+    - argocd.ntdoc.site
+  duration: 2160h    # 90 days
+  renewBefore: 360h  # renew 15 days before expiry
+---
 apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
@@ -56,7 +73,7 @@ spec:
       kind: Rule
       services:
         - name: user-ms-svc
-          port: http
+          port: 8080
       middlewares:
         - name: zitadel-auth
 
@@ -65,7 +82,7 @@ spec:
       kind: Rule
       services:
         - name: payment-ms-svc
-          port: http
+          port: 8080
       middlewares:
         - name: zitadel-auth
 
@@ -74,7 +91,7 @@ spec:
       kind: Rule
       services:
         - name: order-ms-svc
-          port: http
+          port: 8080
       middlewares:
         - name: zitadel-auth
 
@@ -83,7 +100,7 @@ spec:
       kind: Rule
       services:
         - name: product-ms-svc
-          port: http
+          port: 8080
       middlewares:
         - name: zitadel-auth
 
@@ -92,7 +109,49 @@ spec:
       kind: Rule
       services:
         - name: comment-ms-svc
-          port: http
+          port: 8080
       middlewares:
         - name: zitadel-auth
+
+---
+# ============================================================
+# ArgoCD UI — accessible via https://argocd.ntdoc.site
+# (no zitadel-auth, ArgoCD has its own authentication)
+# ============================================================
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: argocd-route
+  namespace: default
+spec:
+  entryPoints:
+    - websecure
+  tls:
+    secretName: api-ntdoc-site-tls-secret
+  routes:
+    - match: Host(`argocd.ntdoc.site`)
+      kind: Rule
+      services:
+        - name: argocd-server
+          namespace: argocd
+          port: 443
+          scheme: https
+---
+# ArgoCD HTTP redirect
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: argocd-route-http-redirect
+  namespace: default
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`argocd.ntdoc.site`)
+      kind: Rule
+      services:
+        - name: noop@internal
+          kind: TraefikService
+      middlewares:
+        - name: redirect-to-https
 
