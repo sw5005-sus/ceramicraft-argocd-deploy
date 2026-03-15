@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: lian1280/ceramicraft-user-mservice
-  tag: v202603071334
+  tag: debug-202603151651
   pullPolicy: IfNotPresent
 
 service:
