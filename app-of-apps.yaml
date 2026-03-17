@@ -47,6 +47,8 @@ spec:
             hostPort: 443
         additionalArguments:
           - "--providers.kubernetesCRD.allowCrossNamespace=true"
+        rbac:
+          namespaced: false
         experimental:
           plugins:
             coraza:
@@ -312,6 +314,60 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: linkerd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: traefik-tls
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sw5005-sus/ceramicraft-argocd-deploy.git
+    targetRevision: HEAD
+    path: traefik-tls
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: traefik
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cert-manager
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: cert-manager
+    repoURL: https://charts.jetstack.io
+    targetRevision: v1.14.5
+    helm:
+      values: |
+        installCRDs: true
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cert-manager
   syncPolicy:
     automated:
       prune: true

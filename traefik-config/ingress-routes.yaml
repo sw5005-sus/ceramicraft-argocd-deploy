@@ -1,95 +1,84 @@
 apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
-  name: rate-limit
-  namespace: default
-spec:
-  rateLimit:
-    average: 100
-    burst: 200
-    period: 1s
-    sourceCriterion:
-      ipStrategy:
-        depth: 1
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: Middleware
-metadata:
-  name: security-headers
-  namespace: default
-spec:
-  headers:
-    browserXssFilter: true
-    contentTypeNosniff: true
-    frameDeny: true
-    stsSeconds: 31536000
-    stsIncludeSubdomains: true
-    contentSecurityPolicy: "default-src 'self'; script-src 'self'; object-src 'none'"
-    referrerPolicy: "strict-origin-when-cross-origin"
-    permissionsPolicy: "camera=(), microphone=(), geolocation=()"
-    customResponseHeaders:
-      X-Robots-Tag: "noindex, nofollow"
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: Middleware
-metadata:
-  name: coraza-waf
-  namespace: default
-spec:
-  plugin:
-    coraza:
-      directives:
-        - Include @recommended-conf
-        - Include @crs-setup-conf
-        - Include @owasp-crs/*.conf
-        - SecRuleEngine On
-        - SecRequestBodyAccess On
-        - SecResponseBodyAccess On
-        - SecResponseBodyMimeType text/plain text/html application/json
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: Middleware
-metadata:
-  name: cors
-  namespace: default
-spec:
-  headers:
-    accessControlAllowOriginList:
-      - "https://admin.ntdoc.site"
-      - "https://ntdoc.site"
-    accessControlAllowMethods:
-      - GET
-      - POST
-      - PUT
-      - DELETE
-      - PATCH
-      - OPTIONS
-    accessControlAllowHeaders:
-      - "Authorization"
-      - "Content-Type"
-      - "X-Requested-With"
-      - "Accept"
-    accessControlExposeHeaders:
-      - "X-Original-User-ID"
-    accessControlAllowCredentials: true
-    accessControlMaxAge: 86400
-    addVaryHeader: true
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: Middleware
-metadata:
   name: zitadel-auth
   namespace: default
 spec:
   forwardAuth:
     address: http://user-ms-svc.default.svc.cluster.local:8080/oauth/v1/verify
     trustForwardHeader: true
-    authRequestHeaders:
-      - "Authorization"
-      - "Cookie"
     authResponseHeaders:
       - "X-Original-User-ID"
+
 ---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: global-cors
+  namespace: default
+spec:
+  headers:
+    accessControlAllowMethods:
+      - "GET"
+      - "POST"
+      - "OPTIONS"
+      - "PUT"
+      - "DELETE"
+    accessControlAllowHeaders:
+      - "Authorization"    # Zitadel Auth
+      - "Content-Type"     # JSON request
+      - "X-Requested-With" # AJAX requests
+      - "Accept"           # Response content types
+      - "Origin"
+    accessControlAllowOriginList:
+      - "https://admin.ntdoc.site"
+    accessControlAllowCredentials: true
+    addVaryHeader: true
+
+---
+# Middleware: HTTP to HTTPS redirect
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-to-https
+  namespace: default
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: secured-api-chain
+  namespace: default
+spec:
+  chain:
+    middlewares:
+      - name: global-cors   # handles CORS for all API routes 
+      - name: zitadel-auth
+
+---
+# HTTP IngressRoute — redirect all traffic to HTTPS
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: backend-routes-http-redirect
+  namespace: default
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`api.ntdoc.site`)
+      kind: Rule
+      services:
+        - name: noop@internal
+          kind: TraefikService
+      middlewares:
+        - name: redirect-to-https
+---
+# HTTPS IngressRoute — main routes with TLS
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
@@ -97,120 +86,91 @@ metadata:
   namespace: default
 spec:
   entryPoints:
-    - web          # Cloudflare → EC2 走 HTTP port 80，TLS 由 Cloudflare 在边缘终止
+    - websecure
+  tls: {}
   routes:
-    - match: Host(`api.ntdoc.site`) && Method(`OPTIONS`) && (PathPrefix(`/api/user-ms`) || PathPrefix(`/user-ms`))
-      kind: Rule
-      priority: 200
-      middlewares:
-        - name: rate-limit
-        - name: cors
-      services:
-        - name: user-ms-svc
-          port: http
-
-    - match: Host(`api.ntdoc.site`) && Method(`OPTIONS`) && (PathPrefix(`/api/payment-ms`) || PathPrefix(`/payment-ms`))
-      kind: Rule
-      priority: 200
-      middlewares:
-        - name: rate-limit
-        - name: cors
-      services:
-        - name: payment-ms-svc
-          port: http
-
-    - match: Host(`api.ntdoc.site`) && Method(`OPTIONS`) && (PathPrefix(`/api/order-ms`) || PathPrefix(`/order-ms`))
-      kind: Rule
-      priority: 200
-      middlewares:
-        - name: rate-limit
-        - name: cors
-      services:
-        - name: order-ms-svc
-          port: http
-
-    - match: Host(`api.ntdoc.site`) && Method(`OPTIONS`) && (PathPrefix(`/api/product-ms`) || PathPrefix(`/product-ms`))
-      kind: Rule
-      priority: 200
-      middlewares:
-        - name: rate-limit
-        - name: cors
-      services:
-        - name: product-ms-svc
-          port: http
-
-    - match: Host(`api.ntdoc.site`) && Method(`OPTIONS`) && (PathPrefix(`/api/comment-ms`) || PathPrefix(`/comment-ms`))
-      kind: Rule
-      priority: 200
-      middlewares:
-        - name: rate-limit
-        - name: cors
-      services:
-        - name: comment-ms-svc
-          port: http
-
+    # User Service
     - match: Host(`api.ntdoc.site`) && (PathPrefix(`/api/user-ms`) || PathPrefix(`/user-ms`))
       kind: Rule
-      priority: 100
-      middlewares:
-        - name: rate-limit
-        - name: cors
-        - name: coraza-waf
-        - name: security-headers
-        - name: zitadel-auth
       services:
         - name: user-ms-svc
-          port: http
+          port: 8080
+      middlewares:
+        - name: secured-api-chain
 
+    # Payment Service
     - match: Host(`api.ntdoc.site`) && (PathPrefix(`/api/payment-ms`) || PathPrefix(`/payment-ms`))
       kind: Rule
-      priority: 100
-      middlewares:
-        - name: rate-limit
-        - name: cors
-        - name: coraza-waf
-        - name: security-headers
-        - name: zitadel-auth
       services:
         - name: payment-ms-svc
-          port: http
+          port: 8080
+      middlewares:
+        - name: secured-api-chain
 
+    # Order Service
     - match: Host(`api.ntdoc.site`) && (PathPrefix(`/api/order-ms`) || PathPrefix(`/order-ms`))
       kind: Rule
-      priority: 100
-      middlewares:
-        - name: rate-limit
-        - name: cors
-        - name: coraza-waf
-        - name: security-headers
-        - name: zitadel-auth
       services:
         - name: order-ms-svc
-          port: http
+          port: 8080
+      middlewares:
+        - name: secured-api-chain
 
+    # Product Service
     - match: Host(`api.ntdoc.site`) && (PathPrefix(`/api/product-ms`) || PathPrefix(`/product-ms`))
       kind: Rule
-      priority: 100
-      middlewares:
-        - name: rate-limit
-        - name: cors
-        - name: coraza-waf
-        - name: security-headers
-        - name: zitadel-auth
       services:
         - name: product-ms-svc
-          port: http
+          port: 8080
+      middlewares:
+        - name: secured-api-chain
 
+    # Comment Service
     - match: Host(`api.ntdoc.site`) && (PathPrefix(`/api/comment-ms`) || PathPrefix(`/comment-ms`))
       kind: Rule
-      priority: 100
-      middlewares:
-        - name: rate-limit
-        - name: cors
-        - name: coraza-waf
-        - name: security-headers
-        - name: zitadel-auth
       services:
         - name: comment-ms-svc
-          port: http
+          port: 8080
+      middlewares:
+        - name: secured-api-chain
+
+---
+# ============================================================
+# ArgoCD UI — accessible via https://argocd.ntdoc.site
+# (no zitadel-auth, ArgoCD has its own authentication)
+# ============================================================
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: argocd-route
+  namespace: default
+spec:
+  entryPoints:
+    - websecure
+  tls: {}
+  routes:
+    - match: Host(`argocd.ntdoc.site`)
+      kind: Rule
+      services:
+        - name: argocd-server
+          namespace: argocd
+          port: 80
+---
+# ArgoCD HTTP redirect
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: argocd-route-http-redirect
+  namespace: default
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`argocd.ntdoc.site`)
+      kind: Rule
+      services:
+        - name: noop@internal
+          kind: TraefikService
+      middlewares:
+        - name: redirect-to-https
 
