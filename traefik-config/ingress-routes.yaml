@@ -1,12 +1,92 @@
 apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
+  name: rate-limit
+  namespace: default
+spec:
+  rateLimit:
+    average: 100
+    burst: 200
+    period: 1s
+    sourceCriterion:
+      ipStrategy:
+        depth: 1
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: security-headers
+  namespace: default
+spec:
+  headers:
+    browserXssFilter: true
+    contentTypeNosniff: true
+    frameDeny: true
+    stsSeconds: 31536000
+    stsIncludeSubdomains: true
+    contentSecurityPolicy: "default-src 'self'; script-src 'self'; object-src 'none'"
+    referrerPolicy: "strict-origin-when-cross-origin"
+    permissionsPolicy: "camera=(), microphone=(), geolocation=()"
+    customResponseHeaders:
+      X-Robots-Tag: "noindex, nofollow"
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: coraza-waf
+  namespace: default
+spec:
+  plugin:
+    coraza:
+      directives:
+        - Include @recommended-conf
+        - Include @crs-setup-conf
+        - Include @owasp-crs/*.conf
+        - SecRuleEngine On
+        - SecRequestBodyAccess On
+        - SecResponseBodyAccess On
+        - SecResponseBodyMimeType text/plain text/html application/json
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: cors
+  namespace: default
+spec:
+  headers:
+    accessControlAllowOriginList:
+      - "https://admin.ntdoc.site"
+      - "https://ntdoc.site"
+    accessControlAllowMethods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - PATCH
+      - OPTIONS
+    accessControlAllowHeaders:
+      - "Authorization"
+      - "Content-Type"
+      - "X-Requested-With"
+      - "Accept"
+    accessControlExposeHeaders:
+      - "X-Original-User-ID"
+    accessControlAllowCredentials: true
+    accessControlMaxAge: 86400
+    addVaryHeader: true
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
   name: zitadel-auth
   namespace: default
 spec:
   forwardAuth:
     address: http://user-ms-svc.default.svc.cluster.local:8080/oauth/v1/verify
     trustForwardHeader: true
+    authRequestHeaders:
+      - "Authorization"
+      - "Cookie"
     authResponseHeaders:
       - "X-Original-User-ID"
 ---
@@ -17,50 +97,120 @@ metadata:
   namespace: default
 spec:
   entryPoints:
-    - web
+    - web          # Cloudflare → EC2 走 HTTP port 80，TLS 由 Cloudflare 在边缘终止
   routes:
-    # User Service
-    - match: PathPrefix(`/api/user-ms`) || PathPrefix(`/user-ms`)
+    - match: Host(`api.ntdoc.site`) && Method(`OPTIONS`) && (PathPrefix(`/api/user-ms`) || PathPrefix(`/user-ms`))
       kind: Rule
+      priority: 200
+      middlewares:
+        - name: rate-limit
+        - name: cors
       services:
         - name: user-ms-svc
           port: http
-      middlewares:
-        - name: zitadel-auth
 
-    # Payment Service
-    - match: PathPrefix(`/api/payment-ms`) || PathPrefix(`/payment-ms`)
+    - match: Host(`api.ntdoc.site`) && Method(`OPTIONS`) && (PathPrefix(`/api/payment-ms`) || PathPrefix(`/payment-ms`))
       kind: Rule
+      priority: 200
+      middlewares:
+        - name: rate-limit
+        - name: cors
       services:
         - name: payment-ms-svc
           port: http
-      middlewares:
-        - name: zitadel-auth
 
-    # Order Service
-    - match: PathPrefix(`/api/order-ms`) || PathPrefix(`/order-ms`)
+    - match: Host(`api.ntdoc.site`) && Method(`OPTIONS`) && (PathPrefix(`/api/order-ms`) || PathPrefix(`/order-ms`))
       kind: Rule
+      priority: 200
+      middlewares:
+        - name: rate-limit
+        - name: cors
       services:
         - name: order-ms-svc
           port: http
-      middlewares:
-        - name: zitadel-auth
 
-    # Product Service
-    - match: PathPrefix(`/api/product-ms`) || PathPrefix(`/product-ms`)
+    - match: Host(`api.ntdoc.site`) && Method(`OPTIONS`) && (PathPrefix(`/api/product-ms`) || PathPrefix(`/product-ms`))
       kind: Rule
+      priority: 200
+      middlewares:
+        - name: rate-limit
+        - name: cors
       services:
         - name: product-ms-svc
           port: http
-      middlewares:
-        - name: zitadel-auth
 
-    # Comment Service
-    - match: PathPrefix(`/api/comment-ms`) || PathPrefix(`/comment-ms`)
+    - match: Host(`api.ntdoc.site`) && Method(`OPTIONS`) && (PathPrefix(`/api/comment-ms`) || PathPrefix(`/comment-ms`))
       kind: Rule
+      priority: 200
+      middlewares:
+        - name: rate-limit
+        - name: cors
       services:
         - name: comment-ms-svc
           port: http
+
+    - match: Host(`api.ntdoc.site`) && (PathPrefix(`/api/user-ms`) || PathPrefix(`/user-ms`))
+      kind: Rule
+      priority: 100
       middlewares:
+        - name: rate-limit
+        - name: cors
+        - name: coraza-waf
+        - name: security-headers
         - name: zitadel-auth
+      services:
+        - name: user-ms-svc
+          port: http
+
+    - match: Host(`api.ntdoc.site`) && (PathPrefix(`/api/payment-ms`) || PathPrefix(`/payment-ms`))
+      kind: Rule
+      priority: 100
+      middlewares:
+        - name: rate-limit
+        - name: cors
+        - name: coraza-waf
+        - name: security-headers
+        - name: zitadel-auth
+      services:
+        - name: payment-ms-svc
+          port: http
+
+    - match: Host(`api.ntdoc.site`) && (PathPrefix(`/api/order-ms`) || PathPrefix(`/order-ms`))
+      kind: Rule
+      priority: 100
+      middlewares:
+        - name: rate-limit
+        - name: cors
+        - name: coraza-waf
+        - name: security-headers
+        - name: zitadel-auth
+      services:
+        - name: order-ms-svc
+          port: http
+
+    - match: Host(`api.ntdoc.site`) && (PathPrefix(`/api/product-ms`) || PathPrefix(`/product-ms`))
+      kind: Rule
+      priority: 100
+      middlewares:
+        - name: rate-limit
+        - name: cors
+        - name: coraza-waf
+        - name: security-headers
+        - name: zitadel-auth
+      services:
+        - name: product-ms-svc
+          port: http
+
+    - match: Host(`api.ntdoc.site`) && (PathPrefix(`/api/comment-ms`) || PathPrefix(`/comment-ms`))
+      kind: Rule
+      priority: 100
+      middlewares:
+        - name: rate-limit
+        - name: cors
+        - name: coraza-waf
+        - name: security-headers
+        - name: zitadel-auth
+      services:
+        - name: comment-ms-svc
+          port: http
 

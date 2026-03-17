@@ -47,6 +47,11 @@ spec:
             hostPort: 443
         additionalArguments:
           - "--providers.kubernetesCRD.allowCrossNamespace=true"
+        experimental:
+          plugins:
+            coraza:
+              moduleName: "github.com/corazawaf/coraza-traefik"
+              version: "v0.3.0"
   destination:
     server: https://kubernetes.default.svc
     namespace: traefik
