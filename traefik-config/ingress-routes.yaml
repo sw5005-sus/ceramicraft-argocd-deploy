@@ -14,6 +14,21 @@ spec:
 apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
+  name: rate-limit
+  namespace: default
+spec:
+  rateLimit:
+    average: 100
+    burst: 50
+    period: 1m
+    sourceCriterion:
+      ipStrategy:
+        depth: 1
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
   name: global-cors
   namespace: default
 spec:
@@ -25,15 +40,52 @@ spec:
       - "PUT"
       - "DELETE"
     accessControlAllowHeaders:
-      - "Authorization"    # Zitadel Auth
-      - "Content-Type"     # JSON request
-      - "X-Requested-With" # AJAX requests
-      - "Accept"           # Response content types
+      - "Authorization"
+      - "Content-Type"
+      - "X-Requested-With"
+      - "Accept"
       - "Origin"
     accessControlAllowOriginList:
+      - "https://ntdoc.site"
       - "https://admin.ntdoc.site"
     accessControlAllowCredentials: true
+    accessControlMaxAge: 86400
     addVaryHeader: true
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: coraza-waf
+  namespace: default
+spec:
+  plugin:
+    coraza:
+      directives:
+        - "Include @coraza.conf-recommended"
+        - "Include @crs-setup.conf.example"
+        - "Include @owasp_crs/*.conf"
+        - "SecRuleEngine On"
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: security-headers
+  namespace: default
+spec:
+  headers:
+    browserXssFilter: true
+    contentTypeNosniff: true
+    frameDeny: true
+    forceSTSHeader: true
+    stsSeconds: 31536000
+    stsIncludeSubdomains: true
+    customResponseHeaders:
+      Content-Security-Policy: "default-src 'self'; script-src 'self'; object-src 'none'"
+      Referrer-Policy: "strict-origin-when-cross-origin"
+      Permissions-Policy: "camera=(), microphone=(), geolocation=()"
+      X-Robots-Tag: "noindex, nofollow"
 
 ---
 # Middleware: HTTP to HTTPS redirect
@@ -56,8 +108,24 @@ metadata:
 spec:
   chain:
     middlewares:
-      - name: global-cors   # handles CORS for all API routes 
+      - name: rate-limit
+      - name: global-cors
+      - name: coraza-waf
+      - name: security-headers
       - name: zitadel-auth
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: public-auth-chain
+  namespace: default
+spec:
+  chain:
+    middlewares:
+      - name: rate-limit
+      - name: global-cors
+      - name: security-headers
 
 ---
 # HTTP IngressRoute — redirect all traffic to HTTPS
@@ -77,6 +145,7 @@ spec:
           kind: TraefikService
       middlewares:
         - name: redirect-to-https
+
 ---
 # HTTPS IngressRoute — main routes with TLS
 apiVersion: traefik.containo.us/v1alpha1
@@ -89,7 +158,46 @@ spec:
     - websecure
   tls: {}
   routes:
-    # User Service
+    # OPTIONS preflight — CORS only, no auth (priority 200)
+    - match: Host(`api.ntdoc.site`) && Method(`OPTIONS`)
+      kind: Rule
+      priority: 200
+      services:
+        - name: noop@internal
+          kind: TraefikService
+      middlewares:
+        - name: global-cors
+
+    # ── Public Routes (priority 300) ─────────────────────────────────────────
+    # BFF login/callback: no JWT yet, WAF excluded to avoid false positives
+    # swagger + ping: intentionally public
+    # /customer/users + /activate use Path() (exact) to avoid catching /users/self
+    - match: >-
+        Host(`api.ntdoc.site`) && (
+          PathPrefix(`/user-ms/v1/customer/login`)              ||
+          PathPrefix(`/api/user-ms/v1/customer/login`)          ||
+          PathPrefix(`/user-ms/v1/merchant/login`)              ||
+          PathPrefix(`/api/user-ms/v1/merchant/login`)          ||
+          PathPrefix(`/user-ms/v1/customer/oauth-callback`)     ||
+          PathPrefix(`/api/user-ms/v1/customer/oauth-callback`) ||
+          Path(`/user-ms/v1/customer/users`)                    ||
+          Path(`/api/user-ms/v1/customer/users`)                ||
+          Path(`/user-ms/v1/customer/users/activate`)           ||
+          Path(`/api/user-ms/v1/customer/users/activate`)       ||
+          PathPrefix(`/user-ms/v1/swagger`)                     ||
+          PathPrefix(`/api/user-ms/v1/swagger`)                 ||
+          Path(`/user-ms/v1/ping`)                              ||
+          Path(`/api/user-ms/v1/ping`)
+        )
+      kind: Rule
+      priority: 300
+      services:
+        - name: user-ms-svc
+          port: 8080
+      middlewares:
+        - name: public-auth-chain
+
+    # User Service — authenticated routes (catch-all)
     - match: Host(`api.ntdoc.site`) && (PathPrefix(`/api/user-ms`) || PathPrefix(`/user-ms`))
       kind: Rule
       services:
@@ -155,6 +263,7 @@ spec:
         - name: argocd-server
           namespace: argocd
           port: 80
+
 ---
 # ArgoCD HTTP redirect
 apiVersion: traefik.containo.us/v1alpha1
@@ -173,4 +282,3 @@ spec:
           kind: TraefikService
       middlewares:
         - name: redirect-to-https
-
