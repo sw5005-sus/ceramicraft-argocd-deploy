@@ -36,6 +36,17 @@ data:
       retries: 3
       batch_timeout_millis: 5
       batch_size: 16384
+    
+    redis:
+      host: "172.31.2.221"
+      port: "6379"
+    
     zitadel:
       host: "https://cerami-t6ihrd.us1.zitadel.cloud"
       client_id: "361761429302373082"
+      app_client_id: "361761429302373082"
+      admin_client_id: "364221631029152417"
+      oauth_callback_url: "https://api.ntdoc.site/user-ms/v1/merchant/login-callback"
+    
+    system:
+      home_url: "https://admin.ntdoc.site"
