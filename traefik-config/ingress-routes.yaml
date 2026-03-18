@@ -9,6 +9,7 @@ spec:
     trustForwardHeader: true
     authResponseHeaders:
       - "X-Original-User-ID"
+      - "Set-Cookie"
 
 ---
 apiVersion: traefik.containo.us/v1alpha1
@@ -39,6 +40,7 @@ spec:
       - "OPTIONS"
       - "PUT"
       - "DELETE"
+      - "PATCH"
     accessControlAllowHeaders:
       - "Authorization"
       - "Content-Type"
@@ -93,9 +95,9 @@ metadata:
 spec:
   chain:
     middlewares:
-      # - name: rate-limit
+      - name: rate-limit
       - name: global-cors
-      # - name: security-headers
+      - name: security-headers
       - name: zitadel-auth
 
 ---
