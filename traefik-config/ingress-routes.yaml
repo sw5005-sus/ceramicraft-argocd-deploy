@@ -56,21 +56,6 @@ spec:
 apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
-  name: coraza-waf
-  namespace: default
-spec:
-  plugin:
-    coraza:
-      directives:
-        - "Include @coraza.conf-recommended"
-        - "Include @crs-setup.conf.example"
-        - "Include @owasp_crs/*.conf"
-        - "SecRuleEngine On"
-
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: Middleware
-metadata:
   name: security-headers
   namespace: default
 spec:
@@ -110,22 +95,8 @@ spec:
     middlewares:
       # - name: rate-limit
       - name: global-cors
-      # - name: coraza-waf
       # - name: security-headers
       - name: zitadel-auth
-
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: Middleware
-metadata:
-  name: public-auth-chain
-  namespace: default
-spec:
-  chain:
-    middlewares:
-      # - name: rate-limit
-      - name: global-cors
-      # - name: security-headers
 
 ---
 # HTTP IngressRoute — redirect all traffic to HTTPS
@@ -167,35 +138,6 @@ spec:
           kind: TraefikService
       middlewares:
         - name: global-cors
-
-    # ── Public Routes (priority 300) ─────────────────────────────────────────
-    # BFF login/callback: no JWT yet, WAF excluded to avoid false positives
-    # swagger + ping: intentionally public
-    # /customer/users + /activate use Path() (exact) to avoid catching /users/self
-    - match: >-
-        Host(`api.ntdoc.site`) && (
-          PathPrefix(`/user-ms/v1/customer/login`)              ||
-          PathPrefix(`/api/user-ms/v1/customer/login`)          ||
-          PathPrefix(`/user-ms/v1/merchant/login`)              ||
-          PathPrefix(`/api/user-ms/v1/merchant/login`)          ||
-          PathPrefix(`/user-ms/v1/customer/oauth-callback`)     ||
-          PathPrefix(`/api/user-ms/v1/customer/oauth-callback`) ||
-          Path(`/user-ms/v1/customer/users`)                    ||
-          Path(`/api/user-ms/v1/customer/users`)                ||
-          Path(`/user-ms/v1/customer/users/activate`)           ||
-          Path(`/api/user-ms/v1/customer/users/activate`)       ||
-          PathPrefix(`/user-ms/v1/swagger`)                     ||
-          PathPrefix(`/api/user-ms/v1/swagger`)                 ||
-          Path(`/user-ms/v1/ping`)                              ||
-          Path(`/api/user-ms/v1/ping`)
-        )
-      kind: Rule
-      priority: 300
-      services:
-        - name: user-ms-svc
-          port: 8080
-      middlewares:
-        - name: public-auth-chain
 
     # User Service — authenticated routes (catch-all)
     - match: Host(`api.ntdoc.site`) && (PathPrefix(`/api/user-ms`) || PathPrefix(`/user-ms`))
