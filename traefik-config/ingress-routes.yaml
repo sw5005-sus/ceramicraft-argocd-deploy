@@ -108,10 +108,10 @@ metadata:
 spec:
   chain:
     middlewares:
-      - name: rate-limit
+      # - name: rate-limit
       - name: global-cors
-      - name: coraza-waf
-      - name: security-headers
+      # - name: coraza-waf
+      # - name: security-headers
       - name: zitadel-auth
 
 ---
@@ -123,9 +123,9 @@ metadata:
 spec:
   chain:
     middlewares:
-      - name: rate-limit
+      # - name: rate-limit
       - name: global-cors
-      - name: security-headers
+      # - name: security-headers
 
 ---
 # HTTP IngressRoute — redirect all traffic to HTTPS
