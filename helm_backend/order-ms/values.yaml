@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: lian1280/ceramicraft-order-mservice
-  tag: dev-202603191452
+  tag: dev-202603191554
   pullPolicy: IfNotPresent
 
 service:
