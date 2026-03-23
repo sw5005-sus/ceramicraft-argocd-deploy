@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: mlflow
-        image: ghcr.io/mlflow/mlflow:v2.10.0
+        image: ghcr.io/mlflow/mlflow:v2.10.0-extras
         command: ["mlflow", "server"]
         args:
           - "--host=0.0.0.0"
