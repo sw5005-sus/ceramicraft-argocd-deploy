@@ -7,9 +7,6 @@ resources:
   - ../../base            
   - db-endpoints.yaml       
 
-commonLabels:
-  env: prod-ish 
-
 patches:
   - target:
       kind: Deployment
