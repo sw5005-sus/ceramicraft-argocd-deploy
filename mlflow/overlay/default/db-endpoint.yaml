@@ -8,6 +8,6 @@ metadata:
     argocd.argoproj.io/sync-wave: "5"
 subsets:
   - addresses:
-      - ip: 172.31.2.221 # 你的 EC2 私有 IP
+      - ip: 172.31.2.221
     ports:
       - port: 5432
