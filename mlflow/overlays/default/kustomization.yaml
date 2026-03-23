@@ -6,12 +6,3 @@ namespace: mlflow
 resources:
   - ../../base            
   - db-endpoints.yaml       
-
-patches:
-  - target:
-      kind: Deployment
-      name: mlflow
-    patch: |-
-      - op: replace
-        path: /spec/replicas
-        value: 1
