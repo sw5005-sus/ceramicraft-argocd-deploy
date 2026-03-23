@@ -409,7 +409,7 @@ spec:
   source:
     repoURL: https://github.com/sw5005-sus/ceramicraft-argocd-deploy.git
     targetRevision: HEAD
-    path: mlflow/overlays/default
+    path: mlflow/base
   destination:
     server: https://kubernetes.default.svc
     namespace: mlflow

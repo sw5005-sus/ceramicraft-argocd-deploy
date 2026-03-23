@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+
+patches:
+  - patch: |-
+      apiVersion: v1
+      kind: Endpoints
+      metadata:
+        name: mlflow-db-service
+        namespace: mlflow
+      subsets:
+        - addresses:
+            - ip: 172.31.2.221
+          ports:
+            - port: 5432
+    target:
+      kind: Endpoints
+      name: mlflow-db-service
