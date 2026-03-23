@@ -33,13 +33,13 @@ spec:
         ports:
         - containerPort: 5000
         env:
-        - name: PGPASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mlflow-secrets
-              key: MLFLOW_DB_PASSWORD
-        - name: MLFLOW_HTTP_REQUEST_TIMEOUT
-          value: "300"
+          - name: PGPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mlflow-secrets
+                key: MLFLOW_DB_PASSWORD
+          - name: MLFLOW_HTTP_REQUEST_TIMEOUT
+            value: "300"
         resources:
           requests:
             memory: "512Mi"
