@@ -6,7 +6,6 @@ metadata:
   namespace: mlflow
   annotations:
     cert-manager.io/issuer: "selfsigned-issuer"
-    traefik.ingress.kubernetes.io/router.middlewares: default-redirect-to-https@kubernetescrd
 spec:
   ingressClassName: traefik
   tls:
