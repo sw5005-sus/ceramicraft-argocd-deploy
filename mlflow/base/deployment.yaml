@@ -28,7 +28,7 @@ spec:
             exec mlflow server \
             --host 0.0.0.0 \
             --port 5000 \
-            --backend-store-uri postgresql://mlflow_user@mlflow-db-service:5432/mlflow_db \
+            --backend-store-uri postgresql://mlflow_user@172.31.2.221:5432/mlflow_db \
             --default-artifact-root s3://ceramicraft-mlflow/
         ports:
         - containerPort: 5000
