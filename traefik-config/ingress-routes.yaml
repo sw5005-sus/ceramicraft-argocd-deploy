@@ -186,6 +186,15 @@ spec:
       middlewares:
         - name: secured-api-chain
 
+    # Notification Service
+    - match: Host(`api.ntdoc.site`) && (PathPrefix(`/api/notification-ms`) || PathPrefix(`/notification-ms`))
+      kind: Rule
+      services:
+        - name: notification-ms-svc
+          port: 8080
+      middlewares:
+        - name: secured-api-chain
+
 ---
 # ============================================================
 # ArgoCD UI — accessible via https://argocd.ntdoc.site

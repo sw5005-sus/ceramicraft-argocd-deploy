@@ -1,0 +1,32 @@
+replicaCount: 1
+
+image:
+  repository: lian1280/ceramicraft-log-mservice
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+  grpcPort: 50051
+
+livenessProbe:
+  path: /log-ms/v1/ping
+  initialDelaySeconds: 10
+  periodSeconds: 5
+readinessProbe:
+  path: /log-ms/v1/ping
+  initialDelaySeconds: 10
+  periodSeconds: 5
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 100m
+    memory: 128Mi
+
+volumes:
+  configMapName: log-ms-config
+  logPath: /tmp/logs/log-ms
