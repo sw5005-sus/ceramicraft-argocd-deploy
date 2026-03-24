@@ -12,12 +12,14 @@ service:
 
 livenessProbe:
   path: /log-ms/v1/ping
-  initialDelaySeconds: 10
-  periodSeconds: 5
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  failureThreshold: 6
 readinessProbe:
   path: /log-ms/v1/ping
-  initialDelaySeconds: 10
-  periodSeconds: 5
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  failureThreshold: 6
 
 resources:
   requests:
