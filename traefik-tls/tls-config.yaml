@@ -13,6 +13,7 @@ spec:
   dnsNames:
     - api.ntdoc.site
     - argocd.ntdoc.site
+    - mlflow.ntdoc.site
   duration: 2160h    # 90 days
   renewBefore: 360h  # renew 15 days before expiry
 
