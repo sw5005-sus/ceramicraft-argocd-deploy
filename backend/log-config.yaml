@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: log-ms-config
+# log-ms is configured entirely via environment variables injected
+# through the Vault external secret (ms-secret-vault).
+# See .env.example in ceramicraft-log-mservice for the full list.
 data: {}
-  # log-ms is configured entirely via environment variables injected
-  # through the Vault external secret (ms-secret-vault).
-  # See .env.example in ceramicraft-log-mservice for the full list.
