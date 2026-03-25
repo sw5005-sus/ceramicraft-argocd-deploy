@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: mlflow
-        image: docker.io/lian1280/mlflow:v2.11.0
+        image: docker.io/lian1280/mlflow:v3.10.1
         args:
           - "--host"
           - "0.0.0.0"
