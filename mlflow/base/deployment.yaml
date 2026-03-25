@@ -20,16 +20,21 @@ spec:
     spec:
       containers:
       - name: mlflow
-        image: docker.io/lian1280/mlflow:v2.11.0
+        image: docker.io/lian1280/mlflow:v3.10.1
+        command: ["mlflow", "server"]
         args:
           - "--host"
           - "0.0.0.0"
           - "--port"
           - "5000"
+          - "--workers"
+          - "1"
           - "--backend-store-uri"
           - "postgresql://mlflow_user@172.31.2.221:5432/mlflow_db"
           - "--default-artifact-root"
           - "s3://ceramicraft-mlflow/"
+          - "--allowed-hosts"
+          - "*"
         ports:
         - containerPort: 5000
         env:
@@ -47,15 +52,21 @@ spec:
           limits:
             memory: "1Gi"
             cpu: "500m"
+        startupProbe:
+          httpGet:
+            path: /
+            port: 5000
+          periodSeconds: 10
+          failureThreshold: 30
         livenessProbe:
           httpGet:
             path: /
             port: 5000
-          initialDelaySeconds: 30
+          initialDelaySeconds: 60
           periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /
             port: 5000
-          initialDelaySeconds: 10
+          initialDelaySeconds: 60
           periodSeconds: 5
