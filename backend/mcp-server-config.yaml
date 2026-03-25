@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mcp-server-config
+# mcp-server is configured via environment variables.
+# Service URLs use cluster-internal defaults; secrets (Zitadel credentials)
+# are injected through the Vault external secret (ms-secret-vault).
+data: {}

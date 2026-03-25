@@ -1,0 +1,34 @@
+replicaCount: 1
+
+image:
+  repository: lian1280/ceramicraft-mcp-server
+  tag: latest
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 8080
+  grpcPort: 8081
+
+livenessProbe:
+  path: /health
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  failureThreshold: 6
+readinessProbe:
+  path: /health
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  failureThreshold: 6
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+volumes:
+  configMapName: mcp-server-config
+  logPath: /tmp/logs/mcp-server
