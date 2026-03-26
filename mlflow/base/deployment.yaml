@@ -43,8 +43,8 @@ spec:
               secretKeyRef:
                 name: mlflow-secrets
                 key: MLFLOW_DB_PASSWORD
-          - name: MLFLOW_HTTP_REQUEST_TIMEOUT
-            value: "300"
+          - name: MLFLOW_SERVER_ENABLE_JOB_EXECUTION
+            value: "false"
         resources:
           requests:
             memory: "512Mi"
