@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: lian1280/ceramicraft-mcp-server
-  tag: latest
+  tag: dev-202603260559
   pullPolicy: Always
 
 service:
