@@ -31,6 +31,10 @@ data:
     paymentClient:
       host: "payment-ms-svc.default.svc.cluster.local"
       port: 5001
+    
+    auditClient:
+      host: "log-ms-svc.default.svc.cluster.local"
+      port: 50051
 
     kafka:
       host: "172.31.2.221"
