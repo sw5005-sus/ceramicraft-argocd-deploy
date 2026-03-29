@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: lian1280/ceramicraft-payment-mservice
-  tag: dev-202603191458
+  tag: dev-202603291946
   pullPolicy: IfNotPresent
 
 service:
