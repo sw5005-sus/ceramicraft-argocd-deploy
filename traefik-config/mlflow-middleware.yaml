@@ -1,0 +1,26 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: mlflow-ajax-fix
+  namespace: default
+spec:
+  headers:
+    customRequestHeaders:
+      X-Forwarded-Proto: "https"
+    accessControlAllowOriginList:
+      - "*"
+    accessControlAllowMethods:
+      - "GET"
+      - "POST"
+      - "OPTIONS"
+      - "PUT"
+    accessControlAllowCredentials: true
+    accessControlAllowHeaders:
+      - "Authorization"
+      - "Content-Type"
+      - "X-Requested-With"
+      - "Accept"
+      - "Origin"
+      - "MLflow-Version"     
+      - "X-MLflow-Run-ID"
+    addVaryHeader: true
