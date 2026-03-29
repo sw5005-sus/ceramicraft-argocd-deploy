@@ -235,3 +235,42 @@ spec:
           kind: TraefikService
       middlewares:
         - name: redirect-to-https
+
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: mlflow-route
+  namespace: default 
+spec:
+  entryPoints:
+    - websecure
+  tls:
+    {}
+  routes:
+    - match: Host(`mlflow.ntdoc.site`)
+      kind: Rule
+      services:
+        - name: mlflow
+          namespace: mlflow
+          port: 80
+
+---
+# MLflow HTTP redirect
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: mlflow-route-http-redirect
+  namespace: default
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`mlflow.ntdoc.site`)
+      kind: Rule
+      services:
+        - name: noop@internal
+          kind: TraefikService
+      middlewares:
+        - name: redirect-to-https
