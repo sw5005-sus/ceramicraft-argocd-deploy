@@ -82,6 +82,9 @@ spec:
             - name: MLFLOW_DISABLE_TELEMETRY
               value: "true"
 
+            - name: MLFLOW_CORS_ALLOW_ORIGINS
+              value: "https://mlflow.ntdoc.site"
+
           resources:
             requests:
               memory: "512Mi"
