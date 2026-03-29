@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: lian1280/ceramicraft-log-mservice
-  tag: debug-202603291652
+  tag: debug-202603291719
   pullPolicy: Always
 
 service:
