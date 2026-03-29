@@ -7,8 +7,9 @@ spec:
   headers:
     customRequestHeaders:
       X-Forwarded-Proto: "https"
+      X-Forwarded-Host: "mlflow.ntdoc.site"
     accessControlAllowOriginList:
-      - "*"
+      - "https://mlflow.ntdoc.site"
     accessControlAllowMethods:
       - "GET"
       - "POST"
