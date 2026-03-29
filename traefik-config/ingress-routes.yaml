@@ -242,7 +242,7 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
   name: mlflow-route
-  namespace: default 
+  namespace: default
 spec:
   entryPoints:
     - websecure
@@ -255,6 +255,8 @@ spec:
         - name: mlflow
           namespace: mlflow
           port: 80
+      middlewares:
+        - name: mlflow-ajax-fix
 
 ---
 # MLflow HTTP redirect
