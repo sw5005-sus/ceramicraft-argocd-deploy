@@ -35,6 +35,10 @@ data:
     auditClient:
       host: "log-ms-svc.default.svc.cluster.local"
       port: 50051
+    
+    pushClient:
+      host: "notification-ms-svc.default.svc.cluster.local"
+      port: 50051
 
     kafka:
       host: "172.31.2.221"
