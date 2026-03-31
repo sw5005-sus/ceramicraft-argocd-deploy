@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: lian1280/ceramicraft-notification-mservice
-  tag: dev-202603270727
+  tag: debug-202603312128
   pullPolicy: Always
 
 service:
