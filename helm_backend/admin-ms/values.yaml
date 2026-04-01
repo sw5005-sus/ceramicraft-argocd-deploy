@@ -1,0 +1,32 @@
+replicaCount: 1
+
+image:
+  repository: lian1280/ceramicraft-admin-mservice
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+  grpcPort: 5001
+
+livenessProbe:
+  path: /admin-ms/v1/ping
+  initialDelaySeconds: 10
+  periodSeconds: 5
+readinessProbe:
+  path: /admin-ms/v1/ping
+  initialDelaySeconds: 10
+  periodSeconds: 5
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 100m
+    memory: 128Mi
+
+volumes:
+  configMapName: admin-ms-config
+  logPath: /tmp/logs/admin-ms
