@@ -19,7 +19,7 @@ data:
       file_path: ./logs/ceramicraft-user-mservice.log
 
     mysql:
-      host: "172.31.2.221"
+      host: "middleware-internal-svc.default.svc.cluster.local"
       port: "3306"
       userName: "root"
       dbName: "user_db"
@@ -29,7 +29,7 @@ data:
 
     kafka:
       brokers: 
-        - "172.31.2.221:29092"
+        - "middleware-internal-svc.default.svc.cluster.local:29092"
       user_activated_topic: "user-activated"
       max_bytes: 1048576
       acks: 1
@@ -38,7 +38,7 @@ data:
       batch_size: 16384
     
     redis:
-      host: "172.31.2.221"
+      host: "middleware-internal-svc.default.svc.cluster.local"
       port: "6379"
     
     zitadel:
