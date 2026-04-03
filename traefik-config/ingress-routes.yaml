@@ -194,6 +194,15 @@ spec:
           port: 8080
       middlewares:
         - name: secured-api-chain
+    
+    # Admin Service — authenticated routes (catch-all)
+    - match: Host(`api.ntdoc.site`) && (PathPrefix(`/api/admin-ms`) || PathPrefix(`/admin-ms`))
+      kind: Rule
+      services:
+        - name: admin-ms-svc
+          port: 8080
+      middlewares:
+        - name: secured-api-chain
 
 ---
 # ============================================================
