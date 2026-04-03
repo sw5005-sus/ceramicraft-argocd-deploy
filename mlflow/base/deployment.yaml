@@ -29,7 +29,7 @@ spec:
             - "--workers"
             - "1"
             - "--backend-store-uri"
-            - "postgresql://mlflow_user@172.31.2.221:5432/mlflow_db"
+            - "postgresql://mlflow_user@middleware-internal-svc.default.svc.cluster.local:5432/mlflow_db"
             - "--default-artifact-root"
             - "s3://ceramicraft-mlflow/"
             - "--cors-allowed-origins"

@@ -19,7 +19,7 @@ data:
       file_path: ./logs/ceramicraft-admin-mservice.log
 
     mysql:
-      host: "172.31.2.221"
+      host: "middleware-internal-svc.default.svc.cluster.local"
       port: "3306"
       userName: "root"
       dbName: "admin_db"
