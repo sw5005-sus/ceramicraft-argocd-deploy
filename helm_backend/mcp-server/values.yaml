@@ -11,12 +11,12 @@ service:
   grpcPort: 8081
 
 livenessProbe:
-  path: /health
+  path: /mcp-server/v1/ping
   initialDelaySeconds: 15
   periodSeconds: 10
   failureThreshold: 6
 readinessProbe:
-  path: /health
+  path: /mcp-server/v1/ping
   initialDelaySeconds: 15
   periodSeconds: 10
   failureThreshold: 6
