@@ -29,7 +29,7 @@ metadata:
   namespace: default
 subsets:
   - addresses:
-      - ip: 100.121.229.118
+      - ip: 100.76.127.66
     ports:
       - name: mysql
         port: 3306
