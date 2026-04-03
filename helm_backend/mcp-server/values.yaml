@@ -14,12 +14,10 @@ livenessProbe:
   path: /mcp-server/v1/ping
   initialDelaySeconds: 15
   periodSeconds: 10
-  failureThreshold: 6
 readinessProbe:
   path: /mcp-server/v1/ping
   initialDelaySeconds: 15
   periodSeconds: 10
-  failureThreshold: 6
 
 resources:
   requests:
