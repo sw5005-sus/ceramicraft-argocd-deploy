@@ -50,6 +50,7 @@ spec:
     accessControlAllowOriginList:
       - "https://ntdoc.site"
       - "https://admin.ntdoc.site"
+      - "https://customer.ntdoc.site"
     accessControlAllowCredentials: true
     accessControlMaxAge: 86400
     addVaryHeader: true
