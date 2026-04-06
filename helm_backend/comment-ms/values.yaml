@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: lian1280/ceramicraft-comment-mservice
-  tag: debug-202603291606
+  tag: 2.4.0
   pullPolicy: IfNotPresent
 
 service:
