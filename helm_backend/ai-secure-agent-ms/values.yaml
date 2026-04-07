@@ -1,0 +1,48 @@
+replicaCount: 1
+
+image:
+  repository: lian1280/ceramicraft-ai-secure-agent
+  tag: debug-202604071410
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+  grpcPort: 5001
+
+livenessProbe:
+  path: /ai-secure-agent-ms/v1/ping
+  initialDelaySeconds: 15
+  periodSeconds: 5
+  timeoutSeconds: 3
+readinessProbe:
+  path: /ai-secure-agent-ms/v1/ping
+  initialDelaySeconds: 15
+  periodSeconds: 5
+  timeoutSeconds: 3
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 1000m
+    memory: 128Mi
+
+volumes:
+  configMapName: ai-secure-agent-ms-config
+  logPath: /tmp/logs/ai-secure-agent
+  mountPath: /app/resources/config.yml
+  subPath: config.yml
+
+extraEnv:
+  - name: CONFIG_PATH
+    value: /app/resources/config.yml
+  - name: PYTHONUNBUFFERED
+    value: "1"
+  - name: ENABLE_MLFLOW_TRACING
+    value: "true"
+  - name: MLFLOW_TRACKING_URI
+    value: http://mlflow.mlflow.svc.cluster.local
+  - name: MALLOC_ARENA_MAX
+    value: "2"  
