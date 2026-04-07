@@ -35,6 +35,9 @@ volumes:
   mountPath: /app/resources/config.yml
   subPath: config.yml
 
+externalSecret:
+  targetName: ai-secure-agent-secrets
+
 extraEnv:
   - name: CONFIG_PATH
     value: /app/resources/config.yml
