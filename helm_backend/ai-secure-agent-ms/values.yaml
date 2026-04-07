@@ -1,0 +1,42 @@
+replicaCount: 1
+
+image:
+  repository: lian1280/ceramicraft-ai-secure-agent-mservice
+  tag: dev-202603041207
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+  grpcPort: 5001
+
+livenessProbe:
+  path: /ai-secure-agent-ms/v1/ping
+  initialDelaySeconds: 10
+  periodSeconds: 5
+readinessProbe:
+  path: /ai-secure-agent-ms/v1/ping
+  initialDelaySeconds: 10
+  periodSeconds: 5
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 100m
+    memory: 128Mi
+
+volumes:
+  configMapName: ai-secure-agent-ms-config
+  logPath: /tmp/logs/ai-secure-agent-ms
+
+podAnnotations:
+  vault.hashicorp.com/agent-inject: "true"
+  vault.hashicorp.com/role: "vault-backend-role"
+  vault.hashicorp.com/agent-inject-secret-config: "secret/ceramicraft/ai-secure-agent_config"
+  vault.hashicorp.com/agent-inject-env-config: "true"
+
+extraEnv:
+  - name: ENABLE_MLFLOW_TRACING
+    value: "true"

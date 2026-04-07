@@ -73,6 +73,10 @@ spec:
           envFrom:
             - secretRef:
                 name: {{ .Values.externalSecret.targetName | default "ms-secret-vault" }}
+          {{- if .Values.extraEnv }}
+          env:
+            {{- toYaml .Values.extraEnv | nindent 12 }}
+          {{- end }}
       volumes:
         - name: config
           configMap:
