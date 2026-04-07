@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: lian1280/ceramicraft-ai-secure-agent
-  tag: debug-202604071141
+  tag: debug-202604071410
   pullPolicy: IfNotPresent
 
 service:
@@ -21,22 +21,27 @@ readinessProbe:
 
 resources:
   requests:
-    cpu: 50m
-    memory: 64Mi
-  limits:
     cpu: 100m
-    memory: 128Mi
+    memory: 256Mi
+  limits:
+    cpu: 200m
+    memory: 345Mi
 
 volumes:
   configMapName: ai-secure-agent-ms-config
   logPath: /tmp/logs/ai-secure-agent-ms
+  mountPath: /app/resources/config.yml
+  subPath: config.yml
 
 podAnnotations:
-  vault.hashicorp.com/agent-inject: "true"
-  vault.hashicorp.com/role: "vault-backend-role"
-  vault.hashicorp.com/agent-inject-secret-config: "secret/ceramicraft/ai-secure-agent_config"
-  vault.hashicorp.com/agent-inject-env-config: "true"
+  linkerd.io/inject: disabled
 
 extraEnv:
   - name: ENABLE_MLFLOW_TRACING
     value: "true"
+  - name: MLFLOW_TRACKING_URI
+    value: "http://mlflow-tracking-svc.mlflow.svc.cluster.local:5000"
+  - name: CONFIG_PATH
+    value: "/app/resources/config.yml"
+  - name: MALLOC_ARENA_MAX
+    value: "2"

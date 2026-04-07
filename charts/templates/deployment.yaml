@@ -40,7 +40,10 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
             - name: config
-              mountPath: /app/resources
+              mountPath: {{ .Values.volumes.mountPath | default "/app/resources" }}
+              {{- if .Values.volumes.subPath }}
+              subPath: {{ .Values.volumes.subPath }}
+              {{- end }}
               readOnly: true
             - name: applogs
               mountPath: /app/logs
