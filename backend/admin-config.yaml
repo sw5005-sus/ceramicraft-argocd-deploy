@@ -27,3 +27,7 @@ data:
     audit_grpc:
       host: "log-ms-svc.default.svc.cluster.local"
       port: 50051
+    
+    redis:
+      host: "middleware-internal-svc.default.svc.cluster.local"
+      port: 6379
