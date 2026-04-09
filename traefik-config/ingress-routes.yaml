@@ -15,6 +15,17 @@ spec:
 apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
+  name: risk-user-checker
+  namespace: default
+spec:
+  forwardAuth:
+    address: http://ai-secure-agent-ms-svc.default.svc.cluster.local:8080/risk/verify
+    trustForwardHeader: true
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
   name: rate-limit
   namespace: default
 spec:
@@ -100,6 +111,7 @@ spec:
       - name: global-cors
       - name: security-headers
       - name: zitadel-auth
+      - name: risk-user-checker
 
 ---
 # HTTP IngressRoute — redirect all traffic to HTTPS
