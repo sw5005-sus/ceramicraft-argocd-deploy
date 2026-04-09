@@ -435,68 +435,84 @@ spec:
     helm:
       values: |
         alloy:
-          configContent: |
-            loki.write "grafana_cloud_loki" {
-              endpoint {
-                url = "https://logs-prod-020.grafana.net/loki/api/v1/push"
-                basic_auth {
-                  username = env("LOKI_USER")
-                  password = env("LOKI_API_KEY")
+          configMap:
+            create: true
+            content: |
+              loki.write "grafana_cloud_loki" {
+                endpoint {
+                  url = "https://logs-prod-020.grafana.net/loki/api/v1/push"
+                  basic_auth {
+                    username = env("LOKI_USER")
+                    password = env("LOKI_API_KEY")
+                  }
                 }
               }
-            }
 
-            discovery.kubernetes "pods" {
-              role = "pod"
-            }
-
-            loki.source.kubernetes "pod_logs" {
-              targets    = discovery.kubernetes.pods.targets
-              forward_to = [loki.write.grafana_cloud_loki.receiver]
-            }
-
-            otelcol.exporter.otlp "grafana_cloud_tempo" {
-              client {
-                endpoint = "tempo-prod-14-prod-ap-southeast-1.grafana.net:443"
-                auth     = otelcol.auth.basic.grafana_cloud_tempo.handler
+              discovery.kubernetes "pods" {
+                role = "pod"
               }
-            }
 
-            otelcol.auth.basic "grafana_cloud_tempo" {
-              username = env("TEMPO_USER")
-              password = env("TEMPO_API_KEY")
-            }
-
-            otelcol.receiver.otlp "default" {
-              grpc { endpoint = "0.0.0.0:4317" }
-              http { endpoint = "0.0.0.0:4318" }
-              output {
-                traces  = [otelcol.exporter.otlp.grafana_cloud_tempo.input]
-                metrics = [otelcol.exporter.otlp.grafana_cloud_tempo.input]
+              loki.source.kubernetes "pod_logs" {
+                targets    = discovery.kubernetes.pods.targets
+                forward_to = [loki.write.grafana_cloud_loki.receiver]
               }
-            }
-        
-        extraEnv:
-          - name: LOKI_USER
-            valueFrom:
-              secretKeyRef:
-                name: grafana-cloud-credentials
-                key: loki-user
-          - name: LOKI_API_KEY
-            valueFrom:
-              secretKeyRef:
-                name: grafana-cloud-credentials
-                key: loki-api-key
-          - name: TEMPO_USER
-            valueFrom:
-              secretKeyRef:
-                name: grafana-cloud-credentials
-                key: tempo-user
-          - name: TEMPO_API_KEY
-            valueFrom:
-              secretKeyRef:
-                name: grafana-cloud-credentials
-                key: tempo-api-key
+
+              otelcol.auth.basic "grafana_cloud_tempo" {
+                username = env("TEMPO_USER")
+                password = env("TEMPO_API_KEY")
+              }
+
+              otelcol.exporter.otlp "grafana_cloud_tempo" {
+                client {
+                  endpoint = "tempo-prod-14-prod-ap-southeast-1.grafana.net:443"
+                  auth     = otelcol.auth.basic.grafana_cloud_tempo.handler
+                }
+              }
+
+              otelcol.receiver.otlp "default" {
+                grpc {
+                  endpoint = "0.0.0.0:4317"
+                }
+                http {
+                  endpoint = "0.0.0.0:4318"
+                }
+                output {
+                  traces  = [otelcol.exporter.otlp.grafana_cloud_tempo.input]
+                  metrics = [otelcol.exporter.otlp.grafana_cloud_tempo.input]
+                }
+              }
+
+          extraPorts:
+            - name: otlp-grpc
+              port: 4317
+              targetPort: 4317
+              protocol: TCP
+            - name: otlp-http
+              port: 4318
+              targetPort: 4318
+              protocol: TCP
+
+          extraEnv:
+            - name: LOKI_USER
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-cloud-credentials
+                  key: loki-user
+            - name: LOKI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-cloud-credentials
+                  key: loki-api-key
+            - name: TEMPO_USER
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-cloud-credentials
+                  key: tempo-user
+            - name: TEMPO_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-cloud-credentials
+                  key: tempo-api-key
 
         service:
           enabled: true
