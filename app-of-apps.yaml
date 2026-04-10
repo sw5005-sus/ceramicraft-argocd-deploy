@@ -434,10 +434,45 @@ spec:
     targetRevision: 1.7.0
     helm:
       values: |
+        rbac:
+          create: true
         alloy:
           configMap:
             create: true
             content: |
+              prometheus.remote_write "metrics_service" {
+                endpoint {
+                  url = "https://prometheus-prod-37-prod-ap-southeast-1.grafana.net/api/prom"
+                  basic_auth {
+                    username = env("PROM_USER")
+                    password = env("PROM_API_KEY")
+                  }
+                }
+              }
+
+              prometheus.scrape "kubernetes_cadvisor" {
+                targets = discovery.kubernetes.nodes.targets
+                scheme  = "https"
+                bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+                tls_config {
+                  insecure_skip_verify = false
+                  ca_file = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+                }
+                metrics_path = "/metrics/cadvisor"
+                forward_to   = [prometheus.remote_write.metrics_service.receiver]
+              }
+
+              prometheus.scrape "kubernetes_nodes" {
+                targets = discovery.kubernetes.nodes.targets
+                scheme  = "https"
+                bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+                tls_config {
+                  insecure_skip_verify = false
+                  ca_file = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+                }
+                forward_to = [prometheus.remote_write.metrics_service.receiver]
+              }
+
               loki.write "grafana_cloud_loki" {
                 endpoint {
                   url = "https://logs-prod-020.grafana.net/loki/api/v1/push"
@@ -450,6 +485,10 @@ spec:
 
               discovery.kubernetes "pods" {
                 role = "pod"
+              }
+
+              discovery.kubernetes "nodes" {
+                role = "node"
               }
 
               loki.source.kubernetes "pod_logs" {
@@ -513,6 +552,16 @@ spec:
                 secretKeyRef:
                   name: grafana-cloud-credentials
                   key: tempo-api-key
+            - name: PROM_USER
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-cloud-credentials
+                  key: prom-user
+            - name: PROM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-cloud-credentials
+                  key: prom-api-key
 
         service:
           enabled: true
