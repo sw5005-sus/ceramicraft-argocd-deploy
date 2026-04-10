@@ -436,6 +436,10 @@ spec:
       values: |
         rbac:
           create: true
+          clusterRules:
+            - apiGroups: [""]
+              resources: ["nodes/proxy"]
+              verbs: ["get"]
         alloy:
           configMap:
             create: true
@@ -450,26 +454,84 @@ spec:
                 }
               }
 
-              prometheus.scrape "kubernetes_cadvisor" {
+              discovery.kubernetes "nodes" {
+                role = "node"
+              }
+
+              discovery.relabel "kubelet" {
                 targets = discovery.kubernetes.nodes.targets
-                scheme  = "https"
-                bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
-                tls_config {
-                  insecure_skip_verify = false
-                  ca_file = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+
+                rule {
+                  source_labels = ["__meta_kubernetes_node_name"]
+                  target_label  = "__metrics_path__"
+                  replacement   = "/api/v1/nodes/$1/proxy/metrics"
                 }
-                metrics_path = "/metrics/cadvisor"
-                forward_to   = [prometheus.remote_write.metrics_service.receiver]
+
+                rule {
+                  target_label = "__address__"
+                  replacement  = "kubernetes.default.svc:443"
+                }
+
+                rule {
+                  source_labels = ["__meta_kubernetes_node_name"]
+                  target_label  = "instance"
+                }
+
+                rule {
+                  source_labels = ["__meta_kubernetes_node_name"]
+                  target_label  = "node"
+                }
+              }
+
+              discovery.relabel "cadvisor" {
+                targets = discovery.kubernetes.nodes.targets
+
+                rule {
+                  source_labels = ["__meta_kubernetes_node_name"]
+                  target_label  = "__metrics_path__"
+                  replacement   = "/api/v1/nodes/$1/proxy/metrics/cadvisor"
+                }
+
+                rule {
+                  target_label = "__address__"
+                  replacement  = "kubernetes.default.svc:443"
+                }
+
+                rule {
+                  source_labels = ["__meta_kubernetes_node_name"]
+                  target_label  = "instance"
+                }
+
+                rule {
+                  source_labels = ["__meta_kubernetes_node_name"]
+                  target_label  = "node"
+                }
               }
 
               prometheus.scrape "kubernetes_nodes" {
-                targets = discovery.kubernetes.nodes.targets
+                targets = discovery.relabel.kubelet.output
                 scheme  = "https"
                 bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
                 tls_config {
                   insecure_skip_verify = false
                   ca_file = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+                  server_name          = "kubernetes"
                 }
+                forward_to = [prometheus.remote_write.metrics_service.receiver]
+              }
+
+              prometheus.scrape "kubernetes_cadvisor" {
+                targets = discovery.relabel.cadvisor.output
+                scheme  = "https"
+
+                bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+
+                tls_config {
+                  ca_file              = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+                  insecure_skip_verify = false
+                  server_name          = "kubernetes"
+                }
+
                 forward_to = [prometheus.remote_write.metrics_service.receiver]
               }
 
@@ -485,10 +547,6 @@ spec:
 
               discovery.kubernetes "pods" {
                 role = "pod"
-              }
-
-              discovery.kubernetes "nodes" {
-                role = "node"
               }
 
               loki.source.kubernetes "pod_logs" {
@@ -517,7 +575,6 @@ spec:
                 }
                 output {
                   traces  = [otelcol.exporter.otlp.grafana_cloud_tempo.input]
-                  metrics = [otelcol.exporter.otlp.grafana_cloud_tempo.input]
                 }
               }
 
