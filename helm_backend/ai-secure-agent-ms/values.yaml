@@ -48,4 +48,21 @@ extraEnv:
   - name: MLFLOW_TRACKING_URI
     value: http://mlflow.mlflow.svc.cluster.local
   - name: MALLOC_ARENA_MAX
-    value: "2"  
+    value: "2"
+  # otel config
+  - name: OTEL_SERVICE_NAME
+    value: "ai-secure-agent-ms"
+  - name: OTEL_RESOURCE_ATTRIBUTES
+    value: "deployment.environment=production,k3s.cluster=main"
+  - name: OTEL_EXPORTER_OTLP_ENDPOINT # duplicate with common env import from Vault, keep it here for better visibility
+    value: "http://alloy.monitoring.svc.cluster.local:4317"
+  - name: OTEL_EXPORTER_OTLP_PROTOCOL
+    value: "grpc"
+  - name: OTEL_TRACES_EXPORTER
+    value: "otlp"
+  - name: OTEL_METRICS_EXPORTER
+    value: "otlp"
+  - name: OTEL_LOGS_EXPORTER
+    value: "otlp"
+  - name: OTEL_PYTHON_LOG_CORRELATION
+    value: "true"
