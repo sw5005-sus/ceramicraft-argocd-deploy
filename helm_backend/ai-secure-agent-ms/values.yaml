@@ -55,9 +55,11 @@ extraEnv:
   - name: OTEL_RESOURCE_ATTRIBUTES
     value: "deployment.environment=production,k3s.cluster=main"
   - name: OTEL_EXPORTER_OTLP_ENDPOINT # duplicate with common env import from Vault, keep it here for better visibility
-    value: "http://alloy.monitoring.svc.cluster.local:4317"
+    value: "grafana-alloy.monitoring.svc.cluster.local:4317"
   - name: OTEL_EXPORTER_OTLP_PROTOCOL
     value: "grpc"
+  - name: OTEL_EXPORTER_OTLP_INSECURE
+    value: "true"
   - name: OTEL_TRACES_EXPORTER
     value: "otlp"
   - name: OTEL_METRICS_EXPORTER
