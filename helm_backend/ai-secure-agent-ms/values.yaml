@@ -27,7 +27,7 @@ resources:
     memory: 64Mi
   limits:
     cpu: 1000m
-    memory: 128Mi
+    memory: 256Mi
 
 volumes:
   configMapName: ai-secure-agent-ms-config
@@ -44,7 +44,7 @@ extraEnv:
   - name: PYTHONUNBUFFERED
     value: "1"
   - name: ENABLE_MLFLOW_TRACING
-    value: "false"
+    value: "true"
   - name: MLFLOW_TRACKING_URI
     value: http://mlflow.mlflow.svc.cluster.local
   - name: MALLOC_ARENA_MAX
