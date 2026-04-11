@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: lian1280/ceramicraft-ai-secure-agent
-  tag: debug-202604111320
+  tag: debug-202604111328
   pullPolicy: IfNotPresent
 
 service:
