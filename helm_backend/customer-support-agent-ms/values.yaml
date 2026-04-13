@@ -1,0 +1,67 @@
+replicaCount: 1
+
+image:
+  repository: lian1280/ceramicraft-customer-support-agent
+  tag: latest
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 8080
+  grpcPort: 50051
+
+livenessProbe:
+  path: /cs-agent/v1/ping
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 3
+readinessProbe:
+  path: /cs-agent/v1/ping
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 3
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+volumes:
+  configMapName: customer-support-agent-ms-config
+  logPath: /tmp/logs/customer-support-agent
+
+externalSecret:
+  targetName: customer-support-agent-secrets
+
+extraEnv:
+  - name: CS_AGENT_MCP_SERVER_URL
+    value: "http://mcp-server-svc.default.svc.cluster.local:8080/mcp"
+  - name: CS_AGENT_OPENAI_MODEL
+    value: "gpt-4o"
+  - name: CS_AGENT_DB_NAME
+    value: "cs_agent_db"
+  - name: CS_AGENT_MLFLOW_EXPERIMENT_NAME
+    value: "ceramicraft-cs-agent"
+  - name: MLFLOW_TRACKING_URI
+    value: "http://mlflow.mlflow.svc.cluster.local"
+  - name: PYTHONUNBUFFERED
+    value: "1"
+  - name: OTEL_SERVICE_NAME
+    value: "customer-support-agent-ms"
+  - name: OTEL_RESOURCE_ATTRIBUTES
+    value: "deployment.environment=production,k3s.cluster=main"
+  - name: OTEL_EXPORTER_OTLP_ENDPOINT
+    value: "http://grafana-alloy.monitoring.svc.cluster.local:4317"
+  - name: OTEL_EXPORTER_OTLP_PROTOCOL
+    value: "grpc"
+  - name: OTEL_EXPORTER_OTLP_INSECURE
+    value: "true"
+  - name: OTEL_TRACES_EXPORTER
+    value: "otlp"
+  - name: OTEL_METRICS_EXPORTER
+    value: "otlp"
+  - name: OTEL_LOGS_EXPORTER
+    value: "none"
