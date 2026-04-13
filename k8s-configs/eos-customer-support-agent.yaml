@@ -13,6 +13,6 @@ spec:
     creationPolicy: Owner
   dataFrom:
     - extract:
-        key: secret/ceramicraft/cs_agent_config
+        key: secret/ceramicraft/customer_support_agent_config
     - extract:
         key: secret/ceramicraft
