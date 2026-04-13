@@ -1,0 +1,18 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: cs-agent-external-secret
+  namespace: default
+spec:
+  refreshInterval: "5m"
+  secretStoreRef:
+    name: vault-backend
+    kind: ClusterSecretStore
+  target:
+    name: cs-agent-secrets
+    creationPolicy: Owner
+  dataFrom:
+    - extract:
+        key: secret/ceramicraft/cs_agent_config
+    - extract:
+        key: secret/ceramicraft
