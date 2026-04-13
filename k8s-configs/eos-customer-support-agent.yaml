@@ -1,7 +1,7 @@
 apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
-  name: cs-agent-external-secret
+  name: customer-support-agent-external-secret
   namespace: default
 spec:
   refreshInterval: "5m"
