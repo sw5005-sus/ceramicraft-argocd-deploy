@@ -37,16 +37,16 @@ externalSecret:
   targetName: cs-agent-secrets
 
 extraEnv:
-  - name: MCP_SERVER_URL
+  - name: CS_AGENT_MCP_SERVER_URL
     value: "http://mcp-server-svc.default.svc.cluster.local:8080/mcp"
-  - name: OPENAI_MODEL
+  - name: CS_AGENT_OPENAI_MODEL
     value: "gpt-4o"
   - name: CS_AGENT_DB_NAME
     value: "cs_agent_db"
+  - name: CS_AGENT_MLFLOW_EXPERIMENT_NAME
+    value: "ceramicraft-cs-agent"
   - name: MLFLOW_TRACKING_URI
     value: "http://mlflow.mlflow.svc.cluster.local"
-  - name: MLFLOW_EXPERIMENT_NAME
-    value: "ceramicraft-cs-agent"
   - name: PYTHONUNBUFFERED
     value: "1"
   - name: OTEL_SERVICE_NAME
