@@ -38,7 +38,7 @@ externalSecret:
 
 extraEnv:
   - name: CS_AGENT_MCP_SERVER_URL
-    value: "http://mcp-server-svc.default.svc.cluster.local:8080/mcp"
+    value: "http://mcp-server-svc:8080/mcp"
   - name: CS_AGENT_OPENAI_MODEL
     value: "gpt-4o"
   - name: CS_AGENT_DB_NAME
