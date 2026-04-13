@@ -31,10 +31,10 @@ resources:
 
 volumes:
   configMapName: customer-support-agent-ms-config
-  logPath: /tmp/logs/cs-agent
+  logPath: /tmp/logs/customer-support-agent
 
 externalSecret:
-  targetName: cs-agent-secrets
+  targetName: customer-support-agent-secrets
 
 extraEnv:
   - name: CS_AGENT_MCP_SERVER_URL

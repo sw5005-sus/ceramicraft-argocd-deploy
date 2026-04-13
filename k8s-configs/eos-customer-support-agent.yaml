@@ -9,7 +9,7 @@ spec:
     name: vault-backend
     kind: ClusterSecretStore
   target:
-    name: cs-agent-secrets
+    name: customer-support-agent-secrets
     creationPolicy: Owner
   dataFrom:
     - extract:
