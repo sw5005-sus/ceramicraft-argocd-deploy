@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: cs-agent-ms-config
+  name: customer-support-agent-ms-config
 # cs-agent is configured via environment variables injected through
 # Vault external secret (cs-agent-secrets) and extraEnv in values.yaml.
 data: {}

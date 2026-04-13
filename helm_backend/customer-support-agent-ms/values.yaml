@@ -30,7 +30,7 @@ resources:
     memory: 512Mi
 
 volumes:
-  configMapName: cs-agent-ms-config
+  configMapName: customer-support-agent-ms-config
   logPath: /tmp/logs/cs-agent
 
 externalSecret:
@@ -50,7 +50,7 @@ extraEnv:
   - name: PYTHONUNBUFFERED
     value: "1"
   - name: OTEL_SERVICE_NAME
-    value: "cs-agent-ms"
+    value: "customer-support-agent-ms"
   - name: OTEL_RESOURCE_ATTRIBUTES
     value: "deployment.environment=production,k3s.cluster=main"
   - name: OTEL_EXPORTER_OTLP_ENDPOINT
