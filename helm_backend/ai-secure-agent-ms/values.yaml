@@ -35,6 +35,9 @@ volumes:
   mountPath: /app/resources/config.yml
   subPath: config.yml
 
+nodeSelector:
+  node-role.kubernetes.io/worker: "true"
+
 externalSecret:
   targetName: ai-secure-agent-secrets
 

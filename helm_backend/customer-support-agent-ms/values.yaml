@@ -33,6 +33,9 @@ volumes:
   configMapName: customer-support-agent-ms-config
   logPath: /tmp/logs/customer-support-agent
 
+nodeSelector:
+  node-role.kubernetes.io/worker: "true"
+
 externalSecret:
   targetName: customer-support-agent-secrets
 
