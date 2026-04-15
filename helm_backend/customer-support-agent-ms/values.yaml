@@ -49,21 +49,5 @@ extraEnv:
     value: "http://mlflow.mlflow.svc.cluster.local"
   - name: PYTHONUNBUFFERED
     value: "1"
-  - name: OTEL_SERVICE_NAME
-    value: "customer-support-agent-ms"
-  - name: OTEL_RESOURCE_ATTRIBUTES
-    value: "deployment.environment=production,k3s.cluster=main"
-  - name: OTEL_EXPORTER_OTLP_ENDPOINT
-    value: "http://grafana-alloy.monitoring.svc.cluster.local:4317"
-  - name: OTEL_EXPORTER_OTLP_PROTOCOL
-    value: "grpc"
-  - name: OTEL_EXPORTER_OTLP_INSECURE
-    value: "true"
-  - name: OTEL_TRACES_EXPORTER
-    value: "otlp"
-  - name: OTEL_METRICS_EXPORTER
-    value: "otlp"
-  - name: OTEL_LOGS_EXPORTER
-    value: "none"
-  - name: MLFLOW_ENABLE_OTLP_EXPORTER
-    value: "false"
+  # OTEL env vars removed — MLflow traces go via HTTP tracking API to MLflow server.
+  # OTEL/Grafana Alloy integration can be re-added later with opentelemetry-exporter-otlp-proto-grpc.
