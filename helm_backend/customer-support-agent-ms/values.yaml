@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: lian1280/ceramicraft-customer-support-agent
-  tag: dev-202604150430
+  tag: dev-202604150801
   pullPolicy: Always
 
 service:
