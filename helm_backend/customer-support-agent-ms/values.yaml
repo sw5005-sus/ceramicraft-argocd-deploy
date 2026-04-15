@@ -49,5 +49,6 @@ extraEnv:
     value: "http://mlflow.mlflow.svc.cluster.local"
   - name: PYTHONUNBUFFERED
     value: "1"
-  # OTEL env vars removed — MLflow traces go via HTTP tracking API to MLflow server.
-  # OTEL/Grafana Alloy integration can be re-added later with opentelemetry-exporter-otlp-proto-grpc.
+  # Override Linkerd-injected OTEL env to prevent MLflow from using OTLP exporter
+  - name: OTEL_EXPORTER_OTLP_ENDPOINT
+    value: ""
