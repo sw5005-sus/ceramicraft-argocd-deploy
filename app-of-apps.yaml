@@ -38,6 +38,8 @@ spec:
             type: Recreate
         service: 
           type: ClusterIP
+        nodeSelector:
+          kubernetes.io/hostname: ip-172-31-17-29
         ports:
           web:
             exposedPort: 80
