@@ -65,3 +65,5 @@ extraEnv:
     value: "otlp"
   - name: OTEL_LOGS_EXPORTER
     value: "none"
+  - name: MLFLOW_TRACE_ENABLE_OTLP_DUAL_EXPORT
+    value: "true"
