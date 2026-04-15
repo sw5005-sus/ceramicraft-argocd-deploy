@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: lian1280/ceramicraft-commodity-mservice
-  tag: dev-202604152329
+  tag: dev-202604152338
   pullPolicy: IfNotPresent
 
 service:
