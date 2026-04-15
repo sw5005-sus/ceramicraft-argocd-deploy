@@ -44,7 +44,7 @@ extraEnv:
   - name: CS_AGENT_DB_NAME
     value: "cs_agent_db"
   - name: CS_AGENT_MLFLOW_EXPERIMENT_NAME
-    value: "ceramicraft-cs-agent"
+    value: "customer-support-agent"
   - name: MLFLOW_TRACKING_URI
     value: "http://mlflow.mlflow.svc.cluster.local"
   - name: PYTHONUNBUFFERED
