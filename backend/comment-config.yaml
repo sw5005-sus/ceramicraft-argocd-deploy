@@ -21,7 +21,7 @@ data:
     mysql:
       host: "middleware-internal-svc.default.svc.cluster.local"
       port: "3306"
-      userName: "root"
+      userName: "ceramicraft"
       dbName: "comment_db"
 
     mongo:
