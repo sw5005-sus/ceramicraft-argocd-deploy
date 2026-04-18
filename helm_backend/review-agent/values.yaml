@@ -1,0 +1,32 @@
+replicaCount: 1
+
+image:
+  repository: lian1280/ceramicraft-review-agent
+  tag: 2.8.1
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 8080
+  grpcPort: 3000
+
+livenessProbe:
+  path: /review-agent/v1/ping
+  initialDelaySeconds: 15
+  periodSeconds: 10
+readinessProbe:
+  path: /review-agent/v1/ping
+  initialDelaySeconds: 15
+  periodSeconds: 10
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+volumes:
+  configMapName: review-agent-config
+  logPath: /tmp/logs/review-agent
