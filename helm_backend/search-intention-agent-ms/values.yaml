@@ -11,13 +11,13 @@ service:
   grpcPort: 50051
 
 livenessProbe:
-  path: /search-agent/actuator/health
+  path: /actuator/health
   initialDelaySeconds: 120
   periodSeconds: 15
   timeoutSeconds: 10
   failureThreshold: 5
 readinessProbe:
-  path: /search-agent/actuator/health
+  path: /actuator/health
   initialDelaySeconds: 120
   periodSeconds: 10
   timeoutSeconds: 5
