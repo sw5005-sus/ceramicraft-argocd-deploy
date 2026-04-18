@@ -223,8 +223,6 @@ spec:
       services:
         - name: ai-secure-agent-ms-svc
           port: 8080
-      middlewares:
-        - name: secured-api-chain
 
 ---
 # ============================================================
