@@ -217,6 +217,15 @@ spec:
       middlewares:
         - name: secured-api-chain
 
+    # AISecureAgent Service — authenticated routes (catch-all)
+    - match: Host(`api.ntdoc.site`) && (PathPrefix(`/api/ai-secure-agent`) || PathPrefix(`/ai-secure-agent`))
+      kind: Rule
+      services:
+        - name: ai-secure-agent-ms-svc
+          port: 8080
+      middlewares:
+        - name: secured-api-chain
+
 ---
 # ============================================================
 # ArgoCD UI — accessible via https://argocd.ntdoc.site
