@@ -12,10 +12,12 @@ service:
 
 livenessProbe:
   path: /review-agent/v1/ping
+  port: 3000
   initialDelaySeconds: 15
   periodSeconds: 10
 readinessProbe:
   path: /review-agent/v1/ping
+  port: 3000
   initialDelaySeconds: 15
   periodSeconds: 10
 
