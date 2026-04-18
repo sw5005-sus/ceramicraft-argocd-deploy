@@ -11,7 +11,7 @@ data:
     mysql:
       host: "middleware-internal-svc.default.svc.cluster.local"
       port: "3306"
-      username: "root"
+      username: "ceramicraft"
       database: "admin_db"
       max_connect_size: 5
     
