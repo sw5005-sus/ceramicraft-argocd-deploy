@@ -30,3 +30,30 @@ resources:
 volumes:
   configMapName: review-agent-config
   logPath: /tmp/logs/review-agent
+
+externalSecret:
+  targetName: review-agent-secrets
+
+extraEnv:
+  - name: BATCH_CRON_SCHEDULE
+    value: "*/2 * * * *"
+  - name: LLM_API_BASEURL
+    value: https://api.moonshot.cn/v1
+  - name: LLM_MODEL
+    value: kimi-k2-0711-preview
+  - name: LLM_VISION_MODEL
+    value: moonshot-v1-8k-vision-preview
+  - name: LLM_TEMPERATURE
+    value: 0
+  - name: LLM_VISION_TEMPERATURE
+    value: 1
+  - name: RUN_ENV
+    value: production
+  - name: MCP_SERVER_URL
+    value: http://ceramicraft-mcp-server:8080/mcp
+  - name: MLFLOW_TRACKING_URI
+    value: https://mlflow.ntdoc.site
+  - name: AWS_DEFAULT_REGION
+    value: ap-southeast-1
+  - name: EMAIL_RECEIVER
+    value: 1228lyric+4@gmail.com
