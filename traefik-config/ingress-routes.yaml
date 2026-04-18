@@ -217,6 +217,15 @@ spec:
       middlewares:
         - name: secured-api-chain
 
+    # Search Intention Agent Service
+    - match: Host(`api.ntdoc.site`) && PathPrefix(`/search-agent`)
+      kind: Rule
+      services:
+        - name: search-intention-agent-ms-svc
+          port: 8070
+      middlewares:
+        - name: secured-api-chain
+
 ---
 # ============================================================
 # ArgoCD UI — accessible via https://argocd.ntdoc.site
