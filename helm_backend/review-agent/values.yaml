@@ -50,7 +50,7 @@ extraEnv:
   - name: RUN_ENV
     value: production
   - name: MCP_SERVER_URL
-    value: http://ceramicraft-mcp-server:8080/mcp
+    value: http://mcp-server-svc:8080/mcp
   - name: MLFLOW_TRACKING_URI
     value: https://mlflow.ntdoc.site
   - name: AWS_DEFAULT_REGION
