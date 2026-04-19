@@ -39,8 +39,8 @@ externalSecret:
 
 extraEnv:
   - name: VITE_AGENT_BASE_URL
-    value: ""
+    value: "https://csagent.ntdoc.site"
   - name: VITE_ZITADEL_REDIRECT_URI
     value: "https://csagent.ntdoc.site/callback"
   - name: VITE_USER_MS_BASE_URL
-    value: ""
+    value: "https://csagent.ntdoc.site"
