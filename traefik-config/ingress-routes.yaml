@@ -314,3 +314,44 @@ spec:
           kind: TraefikService
       middlewares:
         - name: redirect-to-https
+
+---
+# ============================================================
+# CS Agent UI — accessible via https://csagent.ntdoc.site
+# ============================================================
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: csagent-ui-route
+  namespace: default
+spec:
+  entryPoints:
+    - websecure
+  tls: {}
+  routes:
+    - match: Host(`csagent.ntdoc.site`)
+      kind: Rule
+      services:
+        - name: customer-support-agent-ui-svc
+          port: 8080
+      middlewares:
+        - name: rate-limit
+
+---
+# CS Agent UI HTTP redirect
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: csagent-ui-route-http-redirect
+  namespace: default
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`csagent.ntdoc.site`)
+      kind: Rule
+      services:
+        - name: noop@internal
+          kind: TraefikService
+      middlewares:
+        - name: redirect-to-https
