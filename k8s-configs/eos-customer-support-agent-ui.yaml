@@ -11,4 +11,6 @@ spec:
   target:
     name: customer-support-agent-ui-secrets
     creationPolicy: Owner
-  data: []
+  dataFrom:
+    - extract:
+        key: secret/ceramicraft/sec_config
