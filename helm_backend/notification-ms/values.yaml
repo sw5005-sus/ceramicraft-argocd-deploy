@@ -30,3 +30,7 @@ resources:
 volumes:
   configMapName: notification-ms-config
   logPath: /tmp/logs/notification-ms
+
+extraEnv:
+  - name: LOG_LEVEL
+    value: "DEBUG"
