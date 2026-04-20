@@ -36,7 +36,7 @@ externalSecret:
 
 extraEnv:
   - name: BATCH_CRON_SCHEDULE
-    value: "*/2 * * * *"
+    value: "*/1 * * * *"
   - name: LLM_API_BASEURL
     value: https://api.moonshot.cn/v1
   - name: LLM_MODEL
