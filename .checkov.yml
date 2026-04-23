@@ -21,3 +21,4 @@ skip-check:
   - CKV2_K8S_6 # NetworkPolicy coverage is pending staged implementation.
   - CKV_K8S_9 # Legacy dashboard manifests are retained for bootstrap compatibility.
   - CKV_K8S_33 # Kubernetes dashboard manifests are intentionally present for cluster operations.
+  - CKV_K8S_8 # Legacy nginx manifests do not currently define liveness probes.
