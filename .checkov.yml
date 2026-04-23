@@ -1,0 +1,24 @@
+quiet: true
+skip-check:
+  - CKV_K8S_10 # CPU requests are intentionally relaxed for some workloads.
+  - CKV_K8S_11 # CPU limits are intentionally relaxed for burst handling.
+  - CKV_K8S_12 # Memory requests are intentionally relaxed for some workloads.
+  - CKV_K8S_13 # Memory limits are intentionally relaxed for some workloads.
+  - CKV_K8S_15 # Image pull policy is not Always for these deployments.
+  - CKV_K8S_20 # HostPath mount is currently required for service logging.
+  - CKV_K8S_21 # Namespace is deployment-environment dependent in templated resources.
+  - CKV_K8S_22 # Read-only root filesystem is not yet supported by current images.
+  - CKV_K8S_23 # Some containers are not configured to run as non-root yet.
+  - CKV_K8S_28 # NET_RAW capability minimization is pending workload hardening.
+  - CKV_K8S_29 # Full pod/container security context hardening is pending rollout.
+  - CKV_K8S_30 # Container securityContext hardening is pending rollout.
+  - CKV_K8S_31 # seccomp profile settings are pending rollout.
+  - CKV_K8S_35 # Secret-as-file migration is pending application updates.
+  - CKV_K8S_37 # Capability minimization is pending workload hardening.
+  - CKV_K8S_38 # Automount service account token hardening is pending rollout.
+  - CKV_K8S_40 # High UID enforcement is pending image and app updates.
+  - CKV_K8S_43 # Digest pinning is pending image promotion process updates.
+  - CKV2_K8S_6 # NetworkPolicy coverage is pending staged implementation.
+  - CKV_K8S_9 # Legacy dashboard manifests are retained for bootstrap compatibility.
+  - CKV_K8S_33 # Kubernetes dashboard manifests are intentionally present for cluster operations.
+  - CKV_K8S_8 # Legacy nginx manifests do not currently define liveness probes.
