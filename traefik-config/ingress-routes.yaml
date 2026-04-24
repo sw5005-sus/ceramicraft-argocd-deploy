@@ -317,7 +317,7 @@ spec:
 
 ---
 # ============================================================
-# CS Agent UI — accessible via https://csagent.ntdoc.site
+# CS Agent UI — accessible via https://support.ntdoc.site
 # ============================================================
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
@@ -329,7 +329,7 @@ spec:
     - websecure
   tls: {}
   routes:
-    - match: Host(`csagent.ntdoc.site`)
+    - match: Host(`support.ntdoc.site`)
       kind: Rule
       services:
         - name: customer-support-agent-ui-svc
@@ -348,7 +348,7 @@ spec:
   entryPoints:
     - web
   routes:
-    - match: Host(`csagent.ntdoc.site`)
+    - match: Host(`support.ntdoc.site`)
       kind: Rule
       services:
         - name: noop@internal
