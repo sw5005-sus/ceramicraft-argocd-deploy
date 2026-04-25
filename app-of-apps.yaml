@@ -511,12 +511,25 @@ spec:
               prometheus.scrape "kubernetes_nodes" {
                 targets = discovery.relabel.kubelet.output
                 scheme  = "https"
+
                 bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+
                 tls_config {
                   insecure_skip_verify = false
-                  ca_file = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+                  ca_file              = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
                   server_name          = "kubernetes"
                 }
+
+                forward_to = [prometheus.relabel.kubernetes_nodes_filter.receiver]
+              }
+
+              prometheus.relabel "kubernetes_nodes_filter" {
+                rule {
+                  action        = "keep"
+                  source_labels = ["__name__"]
+                  regex         = "up|node_cpu_seconds_total|node_memory_MemAvailable_bytes|node_memory_MemTotal_bytes|node_filesystem_avail_bytes|node_filesystem_size_bytes|node_network_receive_bytes_total|node_network_transmit_bytes_total"
+                }
+
                 forward_to = [prometheus.remote_write.metrics_service.receiver]
               }
 
@@ -532,6 +545,21 @@ spec:
                   server_name          = "kubernetes"
                 }
 
+                forward_to = [prometheus.relabel.kubernetes_cadvisor_filter.receiver]
+              }
+
+              prometheus.relabel "kubernetes_cadvisor_filter" {
+                rule {
+                  action        = "keep"
+                  source_labels = ["__name__"]
+                  regex         = "container_cpu_usage_seconds_total|container_memory_working_set_bytes|container_network_receive_bytes_total|container_network_transmit_bytes_total"
+                }
+
+                rule {
+                  action = "labeldrop"
+                  regex  = "container_label_.*|id|image|name|container_id|pod_uid"
+                }
+
                 forward_to = [prometheus.remote_write.metrics_service.receiver]
               }
 
@@ -542,6 +570,17 @@ spec:
                     job         = "kube-state-metrics",
                   },
                 ]
+
+                forward_to = [prometheus.relabel.kube_state_metrics_filter.receiver]
+              }
+
+              prometheus.relabel "kube_state_metrics_filter" {
+                rule {
+                  action        = "keep"
+                  source_labels = ["__name__"]
+                  regex         = "kube_pod_status_phase|kube_pod_container_status_restarts_total|kube_deployment_status_replicas_available|kube_deployment_status_replicas|kube_node_status_condition"
+                }
+
                 forward_to = [prometheus.remote_write.metrics_service.receiver]
               }
 
