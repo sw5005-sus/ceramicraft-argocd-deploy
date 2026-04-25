@@ -509,8 +509,9 @@ spec:
               }
 
               prometheus.scrape "kubernetes_nodes" {
-                targets = discovery.relabel.kubelet.output
-                scheme  = "https"
+                targets         = discovery.relabel.kubelet.output
+                scheme          = "https"
+                scrape_interval = "60s"
 
                 bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
 
@@ -534,8 +535,9 @@ spec:
               }
 
               prometheus.scrape "kubernetes_cadvisor" {
-                targets = discovery.relabel.cadvisor.output
-                scheme  = "https"
+                targets         = discovery.relabel.cadvisor.output
+                scheme          = "https"
+                scrape_interval = "60s"
 
                 bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
 
@@ -570,6 +572,8 @@ spec:
                     job         = "kube-state-metrics",
                   },
                 ]
+
+                scrape_interval = "60s"
 
                 forward_to = [prometheus.relabel.kube_state_metrics_filter.receiver]
               }
@@ -653,6 +657,15 @@ spec:
               }
 
               otelcol.exporter.prometheus "grafana_cloud" {
+                forward_to = [prometheus.relabel.otel_metrics_filter.receiver]
+              }
+
+              prometheus.relabel "otel_metrics_filter" {
+                rule {
+                  action = "labeldrop"
+                  regex  = "url_full|http_request_header_.*|user_agent_original|client_address|net_peer_name|server_socket_address|network_peer_address"
+                }
+
                 forward_to = [prometheus.remote_write.metrics_service.receiver]
               }
 
