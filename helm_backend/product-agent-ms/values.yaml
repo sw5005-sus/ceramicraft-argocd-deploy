@@ -1,0 +1,81 @@
+replicaCount: 1
+
+image:
+  repository: lian1280/ceramicraft-product-agent
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+
+livenessProbe:
+  path: /health
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+readinessProbe:
+  path: /health
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 1000m
+    memory: 512Mi
+
+volumes:
+  configMapName: product-agent-ms-config
+  logPath: /tmp/logs/product-agent
+  mountPath: /app/resources/config.yml
+  subPath: config.yml
+
+externalSecret:
+  targetName: product-agent-secrets
+
+extraEnv:
+  - name: HOST
+    value: "0.0.0.0"
+  - name: PORT
+    value: "8080"
+  - name: PYTHONUNBUFFERED
+    value: "1"
+  - name: COMMODITY_GRPC_HOST
+    value: "product-ms.default.svc.cluster.local"
+  - name: COMMODITY_GRPC_PORT
+    value: "5001"
+  - name: S3_BUCKET
+    value: "ceramicraft"
+  - name: S3_REGION
+    value: "ap-southeast-1"
+  - name: ENABLE_MLFLOW_TRACING
+    value: "true"
+  - name: MLFLOW_TRACKING_URI
+    value: http://mlflow.mlflow.svc.cluster.local
+  - name: MALLOC_ARENA_MAX
+    value: "2"
+  # otel config
+  - name: OTEL_SERVICE_NAME
+    value: "product-agent-ms"
+  - name: OTEL_RESOURCE_ATTRIBUTES
+    value: "deployment.environment=production,k3s.cluster=main"
+  - name: OTEL_EXPORTER_OTLP_ENDPOINT
+    value: "http://grafana-alloy.monitoring.svc.cluster.local:4317"
+  - name: OTEL_EXPORTER_OTLP_PROTOCOL
+    value: "grpc"
+  - name: OTEL_EXPORTER_OTLP_INSECURE
+    value: "true"
+  - name: OTEL_TRACES_EXPORTER
+    value: "otlp"
+  - name: OTEL_METRICS_EXPORTER
+    value: "otlp"
+  - name: OTEL_LOGS_EXPORTER
+    value: none
+  - name: OTEL_PYTHON_LOG_CORRELATION
+    value: "true"
+  - name: MLFLOW_TRACE_ENABLE_OTLP_DUAL_EXPORT
+    value: "true"
