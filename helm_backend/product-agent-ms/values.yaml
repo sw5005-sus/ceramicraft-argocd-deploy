@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: lian1280/ceramicraft-product-agent
-  tag: latest
+  tag: dev-20260426
   pullPolicy: IfNotPresent
 
 service:
