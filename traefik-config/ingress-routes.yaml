@@ -224,6 +224,15 @@ spec:
         - name: ai-secure-agent-ms-svc
           port: 8080
 
+    # Product Agent Service
+    - match: Host(`api.ntdoc.site`) && (PathPrefix(`/api/product-agent`) || PathPrefix(`/product-agent`))
+      kind: Rule
+      services:
+        - name: product-agent-ms-svc
+          port: 8080
+      middlewares:
+        - name: secured-api-chain
+
     # Search Intention Agent Service
     - match: Host(`api.ntdoc.site`) && PathPrefix(`/search-agent`)
       kind: Rule
