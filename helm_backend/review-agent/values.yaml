@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: lian1280/ceramicraft-review-agent
-  tag: 3.0
+  tag: 3.1
   pullPolicy: Always
 
 service:
