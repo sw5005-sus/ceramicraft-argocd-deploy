@@ -45,7 +45,7 @@ extraEnv:
   - name: PYTHONUNBUFFERED
     value: "1"
   - name: COMMODITY_GRPC_HOST
-    value: "product-ms.default.svc.cluster.local"
+    value: "product-ms-svc.default.svc.cluster.local"
   - name: COMMODITY_GRPC_PORT
     value: "5001"
   - name: S3_BUCKET
