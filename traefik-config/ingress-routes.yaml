@@ -15,17 +15,6 @@ spec:
 apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
-  name: risk-user-checker
-  namespace: default
-spec:
-  forwardAuth:
-    address: http://ai-secure-agent-ms-svc.default.svc.cluster.local:8080/risk/verify
-    trustForwardHeader: true
-
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: Middleware
-metadata:
   name: rate-limit
   namespace: default
 spec:
@@ -111,7 +100,6 @@ spec:
       - name: global-cors
       - name: security-headers
       - name: zitadel-auth
-      - name: risk-user-checker
 
 ---
 # HTTP IngressRoute — redirect all traffic to HTTPS
@@ -217,31 +205,6 @@ spec:
       middlewares:
         - name: secured-api-chain
 
-    # AISecureAgent Service — authenticated routes (catch-all)
-    - match: Host(`api.ntdoc.site`) && (PathPrefix(`/api/ai-secure-agent`) || PathPrefix(`/ai-secure-agent`))
-      kind: Rule
-      services:
-        - name: ai-secure-agent-ms-svc
-          port: 8080
-
-    # Product Agent Service
-    - match: Host(`api.ntdoc.site`) && (PathPrefix(`/api/product-agent`) || PathPrefix(`/product-agent`))
-      kind: Rule
-      services:
-        - name: product-agent-ms-svc
-          port: 8080
-      middlewares:
-        - name: secured-api-chain
-
-    # Search Intention Agent Service
-    - match: Host(`api.ntdoc.site`) && PathPrefix(`/search-agent`)
-      kind: Rule
-      services:
-        - name: search-intention-agent-ms-svc
-          port: 8070
-      middlewares:
-        - name: secured-api-chain
-
 ---
 # ============================================================
 # ArgoCD UI — accessible via https://argocd.ntdoc.site
@@ -276,88 +239,6 @@ spec:
     - web
   routes:
     - match: Host(`argocd.ntdoc.site`)
-      kind: Rule
-      services:
-        - name: noop@internal
-          kind: TraefikService
-      middlewares:
-        - name: redirect-to-https
-
-
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
-metadata:
-  name: mlflow-route
-  namespace: default
-spec:
-  entryPoints:
-    - websecure
-  tls:
-    {}
-  routes:
-    - match: Host(`mlflow.ntdoc.site`)
-      kind: Rule
-      services:
-        - name: mlflow
-          namespace: mlflow
-          port: 80
-      middlewares:
-        - name: mlflow-ajax-fix
-
----
-# MLflow HTTP redirect
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
-metadata:
-  name: mlflow-route-http-redirect
-  namespace: default
-spec:
-  entryPoints:
-    - web
-  routes:
-    - match: Host(`mlflow.ntdoc.site`)
-      kind: Rule
-      services:
-        - name: noop@internal
-          kind: TraefikService
-      middlewares:
-        - name: redirect-to-https
-
----
-# ============================================================
-# CS Agent UI — accessible via https://support.ntdoc.site
-# ============================================================
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
-metadata:
-  name: csagent-ui-route
-  namespace: default
-spec:
-  entryPoints:
-    - websecure
-  tls: {}
-  routes:
-    - match: Host(`support.ntdoc.site`)
-      kind: Rule
-      services:
-        - name: customer-support-agent-ui-svc
-          port: 8080
-      middlewares:
-        - name: rate-limit
-
----
-# CS Agent UI HTTP redirect
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
-metadata:
-  name: csagent-ui-route-http-redirect
-  namespace: default
-spec:
-  entryPoints:
-    - web
-  routes:
-    - match: Host(`support.ntdoc.site`)
       kind: Rule
       services:
         - name: noop@internal
