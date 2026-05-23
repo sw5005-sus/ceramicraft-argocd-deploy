@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: search-intention-agent-ms-config
-# search-intention-agent is configured via environment variables injected through
-# Vault external secret (search-intention-agent-secrets) and extraEnv in values.yaml.
-# Spring Boot application.yml is bundled inside the Docker image.
-data: {}
